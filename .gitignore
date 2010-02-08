@@ -17,3 +17,4 @@ test.log
 tmp/*
 test/*
 vendor/plugins/*
+socket/flex/client/bin-debug/*
