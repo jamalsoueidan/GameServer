@@ -1,0 +1,76 @@
+# Sample localization file for English. Add more files in this directory for other locales.
+# See http://github.com/svenfuchs/rails-i18n/tree/master/rails%2Flocale for starting points.
+
+da:
+  actioncontroller:
+    user:
+      cancel: "Annullere"
+      index:
+        logout: "Log af"
+        logged_in: "Du er nu logget ind"
+      login:
+        wrong_password: "Du har indtastet forkert email eller adgangskode"
+        not_active: "Du har ikke aktiveret din konto."
+        button_submit: "Log ind"
+        button_forgot_password: "Glemt din adgangskode?"
+        button_signup: "Opret konto"
+      signup:
+        success: "Du er nu oprettet, check din mail for at aktivere din konto."
+        invalid: "Der opstod fejl under oprettelse af nye konto."
+        button_signup: "Opret konto"
+        terms_of_service: "Ved at klikke på opret konto, bekræfter du hermed at du har læst og forstået {{url}}"
+        terms_of_service_link: betingelserne.
+      activate:
+        invalid: "Din aktiveringskode er ugyldig"
+        success: "Din brugernavn er nu aktiveret, og du er nu logget på"
+      logout:
+        success: "Du er nu logget af"
+      forgot_password:
+        invalid: "Ugyldig e-mail-adresse, du bedes kontroller den e-mail-adresse, som du har indtastet."
+        success: "En mail er sendt til dig, du bedes følger instruktionerne i mailen."
+        button_forgot_password: "Nulstil adgangskode"
+      new_password:
+        invalid: "Du har indtastet ugyldig url"
+        success: "Du har nu oprettet et nyt adgangskode for din konto."
+        button_create_new_password: Opret nyt adgangskode
+      terms_of_service:
+        text: "Terms of service..."
+  actionmailer:
+    user:
+      new_user:
+        from: "Host <no-reply@testerne.dk>"
+        subject: "Ny Bruger"
+        body: "<a href='{{url}}'>New user activate</a>"
+      forgot_password:
+        from: "Host <no-reply@testerne.dk>"
+        subject: "Glemt adgangskode"     
+        body: "<a href='{{url}}'>Forgot your password</a>"
+  activerecord:
+    attributes:
+      user:
+        email: "Email"
+        password: "Adgangskode"
+        name: "Navn"
+        password_confirmation: "Gentag adgangskode"
+    errors:
+      messages:
+        inclusion: "er ikke i listen"
+        exclusion: "er reserveret"
+        invalid: "er ikke gyldig"
+        confirmation: "stemmer ikke overens"
+        accepted: "skal accepteres"
+        empty: "må ikke udelades"
+        blank: "skal udfyldes"
+        too_long: "er for lang (maksimum {{count}} tegn)"
+        too_short: "er for kort (minimum {{count}} tegn)"
+        wrong_length: "har forkert længde (skulle være {{count}} tegn)"
+        taken: "er allerede anvendt"
+        not_a_number: "er ikke et tal"
+        greater_than: "skal være større end {{count}}"
+        greater_than_or_equal_to: "skal være større end eller lig med {{count}}"
+        equal_to: "skal være lig med {{count}}"
+        less_than: "skal være mindre end {{count}}"
+        less_than_or_equal_to: "skal være mindre end eller lig med {{count}}"
+        odd: "skal være ulige"
+        even: "skal være lige"
+        record_invalid: "Validation fejlede: {{errors}}"

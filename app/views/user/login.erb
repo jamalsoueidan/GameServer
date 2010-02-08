@@ -1,0 +1,5 @@
+<% js_form_for :user do |f| %>
+	<%= f.text_field :email %>
+	<%= f.password_field :password, :after_label => " " + link_to("(" + tt("user.login.button_forgot_password") + ")", :action => "forgot_password") %>
+	<%= f.submit_or_cancel :submit => {:label => tt("user.login.button_submit")}, :cancel => {:label => tt("user.login.button_signup"), :url => {:action => "signup"}} %>
+<% end %>

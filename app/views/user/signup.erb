@@ -1,0 +1,8 @@
+<% js_form_for :user, @user, :show_requirements => true do |f| %>
+	<%= f.text_field :email, :show_error_after_field => true %>
+	<%= f.text_field :name %>
+	<%= f.password_field :password %>
+	<%= f.password_field :password_confirmation %>
+	<%= f.terms_of_service tt("user.signup.terms_of_service", :url => link_popup(tt("user.signup.terms_of_service_link"), :action => "terms_of_service")) %>
+	<%= f.submit_or_cancel :submit => {:label => tt("user.signup.button_signup")}, :cancel => {:label => tt("user.cancel"), :url => {:action => :login}} %>
+<% end %>

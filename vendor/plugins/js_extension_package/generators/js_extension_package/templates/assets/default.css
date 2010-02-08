@@ -1,0 +1,26 @@
+.float-left { float:left;}
+.float-right { float:right; }
+.clear { clear:both;}
+
+.padding-left { padding-left:5px; }
+.padding-right { padding-right:5px; }
+.padding-below, .padding-down, .padding-bottom { padding-bottom:5px; }
+.padding-above, .padding-up, .padding-top { padding-top:5px; }
+
+.margin-left { margin-left:10px; }
+.margin-right { margin-right:10px; }
+.margin-below, .margin-down, .margin-bottom { margin-bottom:10px; }
+.margin-adobe, .margin-up, .margin-top { margin-top:10px; }
+
+.align-left { text-align:left;}
+.align-right { text-align:right;}
+
+.bold {font-weight:bold;}
+.normal { font-weight:normal;}
+
+form, h1, h2, h3, h4, h5 { padding:0; margin: 0;}
+
+.flash { font-weight: bold; padding: 5px; margin-bottom: 5px;}
+.flash-error {background-color: #FAA; border: solid 2px red;}
+.flash-notice { background-color: #FFA; border: solid 2px yellow;}
+.flash-success { background-color: #AFA; border: solid 2px green;}

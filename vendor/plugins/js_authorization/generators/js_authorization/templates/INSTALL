@@ -1,0 +1,27 @@
+
+
+Installation is finished.
+
+Keep in mind to use this plugin you also need those two small plugins.
+
+ruby script/plugin install git://github.com/jamalsoueidan/js_form_builder.git
+ruby script/plugin install git://github.com/jamalsoueidan/js_extension_package.git
+
+
+Keep in mind to change the mail configurations.
+./config/initializers/js_authorization_mail.rb
+
+Default values.
+ActionMailer::Base.default_url_options = { :host => "localhost:3000" } 
+ActionMailer::Base.delivery_method = :sendmail
+ActionMailer::Base.perform_deliveries = true
+ActionMailer::Base.raise_delivery_errors = true
+ActionMailer::Base.sendmail_settings = {
+:location       => '/usr/sbin/sendmail',
+:arguments      => '-i -t'
+}
+
+
+
+IMPORTANT:
+rake db:migrate

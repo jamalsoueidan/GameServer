@@ -1,0 +1,7 @@
+
+
+Now form.css is copied to your stylesheet folder public/stylesheets
+
+Include it in your layout file as follow
+
+<%= stylesheet_link_tag "form" %>

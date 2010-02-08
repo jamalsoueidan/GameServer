@@ -1,0 +1,17 @@
+#!/usr/bin/env ruby
+
+require 'rubygems'
+require 'eventmachine'
+require 'json'
+require 'logger'
+
+puts "Booting SocketServer..."
+
+require File.dirname(__FILE__) + '/../config/environment'
+require File.dirname(__FILE__) + '/../socket/server'
+
+EventMachine::run {
+  host, port = "0.0.0.0", 8090
+  puts "Now accepting connections on address #{host}, port #{port}..."
+  EventMachine::start_server host, port, SocketServer
+}

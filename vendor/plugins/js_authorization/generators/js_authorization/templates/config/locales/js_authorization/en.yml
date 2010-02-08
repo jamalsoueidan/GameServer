@@ -1,0 +1,76 @@
+# Sample localization file for English. Add more files in this directory for other locales.
+# See http://github.com/svenfuchs/rails-i18n/tree/master/rails%2Flocale for starting points.
+
+en:
+  actioncontroller:
+    user:
+      cancel: "Cancel"
+      index:
+        logout: "Log out"
+        logged_in: "You are now logged in."
+      login:
+        wrong_password: "You typed your email or password wrong"
+        not_active: "Your account is not active"
+        button_submit: "Login"
+        button_forgot_password: "Forgot password"
+        button_signup: "Create user"
+      signup:
+        success: "You are now created, please check your mail to activate your account"
+        invalid: "Their is some errors that occured."
+        button_signup: "Create account"
+        terms_of_service: "By clicking Sign Up, you are indicating that you have read and agree to the {{url}}"
+        terms_of_service_link: Terms of Use and Privacy Policy.
+      activate:
+        invalid: "Your activationcode is invalid"
+        success: "Your account is now activated, and you are also logged in."
+      logout:
+        success: "You are now logged out"
+      forgot_password:
+        invalid: "We didn't find any account with that email"
+        success: "We sent you a mail to reset your password, please follow the instructions."
+        button_forgot_password: "Forgot password"
+      new_password:
+        invalid: "Your url is invalid"
+        success: "You have now created new password for your account, and you are also logged in"
+        button_create_new_password: "Create new password"
+      terms_of_service:
+        text: "Terms of service text"
+  actionmailer:
+    user:
+      new_user:
+        from: "Host <no-reply@testerne.dk>"
+        subject: "New Account"
+        body: "<a href='{{url}}'>Activate account</a>"
+      forgot_password:
+        from: "Host <no-reply@testerne.dk>"
+        subject: "Forgot Password"     
+        body: "<a href='{{url}}'>Forgot your password</a>"
+  activerecord:
+    attributes:
+      user:
+        email: "Email"
+        password: "Password"
+        name: "Name"
+        password_confirmation: "Retype password"
+    errors:
+      messages:
+        inclusion: "is not included in the list"
+        exclusion: "is reserved"
+        invalid: "is invalid"
+        confirmation: "doesn't match confirmation"
+        accepted: "must be accepted"
+        empty: "can't be empty"
+        blank: "can't be blank"
+        too_long: "is too long (maximum is {{count}} characters)"
+        too_short: "is too short (minimum is {{count}} characters)"
+        wrong_length: "is the wrong length (should be {{count}} characters)"
+        taken: "has already been taken"
+        not_a_number: "is not a number"
+        greater_than: "must be greater than {{count}}"
+        greater_than_or_equal_to: "must be greater than or equal to {{count}}"
+        equal_to: "must be equal to {{count}}"
+        less_than: "must be less than {{count}}"
+        less_than_or_equal_to: "must be less than or equal to {{count}}"
+        odd: "must be odd"
+        even: "must be even"
+        record_invalid: "Validation failed: {{errors}}"
