@@ -1,7 +1,7 @@
 class CreatePlayers < ActiveRecord::Migration
   def self.up
-    create_table :players, :id => false do |t|
-      t.integer :user_id, :session_id, :game_id 
+    create_table :players do |t|
+      t.integer :user_id, :room_id 
     end
   end
 
