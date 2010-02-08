@@ -2,6 +2,8 @@
 <mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" creationComplete="creationComplete();">
 	<mx:Script>
 		<![CDATA[
+			import com.game.requests.PublicMessageRequest;
+			import com.game.events.PublicMessageEvent;
 			import com.game.events.PlayerListEvent;
 			import com.firebug.logger.Logger;
 			import com.game.events.JoinRoomEvent;
@@ -23,17 +25,42 @@
 				socket = new Game();
 				socket.addEventListener(JoinRoomEvent.RESPONSE, joinedRoom);
 				socket.addEventListener(PlayerListEvent.RESPONSE, playerList);
+				socket.addEventListener(PublicMessageEvent.RESPONSE, publicMessage);
+				socket.addEventListener(Event.CONNECT, connected);
+				socket.connect();
 			}
 			
 			private function joinedRoom(evt:JoinRoomEvent):void {
 				Logger.log("room joined");
 			}
 			
+			private function connected(evt:Event):void {
+				chat.text = "Connected \n";	
+			}
+			
+			private function publicMessage(evt:PublicMessageEvent):void {
+				chat.text = evt.player.name + ": " + evt.text + "\n" + chat.text;
+			}
+			
 			private function playerList(evt:PlayerListEvent):void {
 				Logger.log(evt.players);
+				
+				list.dataProvider = evt.players;
+			}
+			
+			private function send():void {
+				var message:PublicMessageRequest = new PublicMessageRequest();
+				message.text = msg.text;
+				msg.text = "";
+				msg.setFocus();
+				socket.send(message);
 			}
 		]]>
 	</mx:Script>
-	<mx:TextArea x="0" y="0" width="100%" height="534" id="console"/>
-	<mx:Button x="219" y="542" label="JoinGame"/>
+	<mx:Button x="288" y="316" label="Send" click="send();"/>
+	<mx:Button x="350" y="316" label="Close" click="socket.close();"/>
+	<mx:Button x="414" y="316" label="Connect" click="socket.connect();"/>
+	<mx:TextArea x="10" y="10" width="476" height="298" id="chat"/>
+	<mx:List x="494" y="8" width="208" height="300" id="list" labelField="name"></mx:List>
+	<mx:TextInput x="10" y="316" width="270" id="msg"/>
 </mx:Application>

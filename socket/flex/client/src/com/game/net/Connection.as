@@ -29,6 +29,11 @@ package com.game.net
 		private var receive_encode_type:uint = 0;
 		private var receive_data_size:uint = 0;	
 			
+			
+		public function get connected():Boolean {
+			return socket.connected;
+		}
+		
 		public function Connection():void {
 			socket = new Socket();
 			
@@ -43,6 +48,10 @@ package com.game.net
 		
 		public function connect():void {
 			socket.connect("localhost", 15000);
+		}
+		
+		public function close():void {
+			socket.close();
 		}
 		
 		private function connectHandler(evt:Event):void {

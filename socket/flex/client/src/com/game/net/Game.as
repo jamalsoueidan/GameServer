@@ -7,6 +7,9 @@ package com.game.net
 	import flash.events.EventDispatcher;
 	import flash.utils.getDefinitionByName;
 	
+	[Event(name="close", type="flash.event.Event")]
+	[Event(name="connect", type="flash.event.Event")]
+	
 	public class Game extends EventDispatcher
 	{
 		private var _connection:Connection;
@@ -16,10 +19,21 @@ package com.game.net
 			_connection = new Connection();
 			_connection.addEventListener(Event.CONNECT, connected);
 			_connection.addEventListener(ConnectionEvent.UPDATE, update);
-			_connection.connect();
+			
+		}
+		
+		public function connect():void {
+			if ( !_connection.connected ) { 
+				_connection.connect();
+			}
+		}
+		
+		public function close():void {
+			_connection.close();
 		}
 		
 		private function connected(evt:Event):void {
+			dispatchEvent(evt);
 			var joinRoomRequest:JoinRoomRequest = new JoinRoomRequest();
 			joinRoomRequest.salt = "jamal"
 			joinRoomRequest.name = "Jamal"
@@ -28,7 +42,7 @@ package com.game.net
 		}
 		
 		public function send(request:Request):void {
-			//_game.send(request);
+			_connection.send(request.object);
 		}
 		
 		private function update(evt:ConnectionEvent):void {
@@ -44,7 +58,6 @@ package com.game.net
 			
 			PlayerListEvent
 			JoinRoomEvent
-			
 			
 			trace("className:", "com.game.events." + className);
 			trace("eventName:", eventName);
