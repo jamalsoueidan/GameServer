@@ -13,18 +13,30 @@ package com.game.net
 	public class Game extends EventDispatcher
 	{
 		private var _connection:Connection;
+		private static var _instance:Game;
 		
-		public function Game()
-		{
-			_connection = new Connection();
-			_connection.addEventListener(Event.CONNECT, connected);
-			_connection.addEventListener(ConnectionEvent.UPDATE, update);
+		public static function getInstance():Game {
+			if ( !_instance ) {
+				new Game();
+			}
 			
+			return _instance;
 		}
 		
-		public function connect():void {
-			if ( !_connection.connected ) { 
-				_connection.connect();
+		public function Game():void {
+			if ( _instance ) {
+				throw new Error("Only one instance of game");
+			}
+			
+			_instance = this;
+		}
+		
+		public function connect(host:String, port:Number):void {
+			if ( !_connection ) {
+				_connection = new Connection();
+				_connection.addEventListener(Event.CONNECT, connected);
+				_connection.addEventListener(ConnectionEvent.UPDATE, update); 
+				_connection.connect(host, port);
 			}
 		}
 		
@@ -34,11 +46,12 @@ package com.game.net
 		
 		private function connected(evt:Event):void {
 			dispatchEvent(evt);
-			var joinRoomRequest:JoinRoomRequest = new JoinRoomRequest();
+			
+			/*var joinRoomRequest:JoinRoomRequest = new JoinRoomRequest();
 			joinRoomRequest.salt = "jamal"
 			joinRoomRequest.name = "Jamal"
 			
-			_connection.send(joinRoomRequest.object);
+			_connection.send(joinRoomRequest.object);*/
 		}
 		
 		public function send(request:Request):void {

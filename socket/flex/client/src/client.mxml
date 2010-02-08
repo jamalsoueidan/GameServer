@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" creationComplete="creationComplete();">
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute">
 	<mx:Script>
 		<![CDATA[
 			import com.game.requests.PublicMessageRequest;
@@ -21,13 +21,13 @@
 			private var receive_encode_type:uint = 0;
 			private var receive_data_size:uint = 0;	
 			
-			public function creationComplete():void {
-				socket = new Game();
+			private function connect():void {
+				socket = Game.getInstance();
 				socket.addEventListener(JoinRoomEvent.RESPONSE, joinedRoom);
 				socket.addEventListener(PlayerListEvent.RESPONSE, playerList);
 				socket.addEventListener(PublicMessageEvent.RESPONSE, publicMessage);
 				socket.addEventListener(Event.CONNECT, connected);
-				socket.connect();
+				socket.connect(host.text, Number(port.text));
 			}
 			
 			private function joinedRoom(evt:JoinRoomEvent):void {
@@ -36,6 +36,12 @@
 			
 			private function connected(evt:Event):void {
 				chat.text = "Connected \n";	
+				
+				var joinRoomRequest:JoinRoomRequest = new JoinRoomRequest();
+				joinRoomRequest.salt = "jamal"
+				joinRoomRequest.name = "Jamal"
+			
+				socket.send(joinRoomRequest);
 			}
 			
 			private function publicMessage(evt:PublicMessageEvent):void {
@@ -58,9 +64,11 @@
 		]]>
 	</mx:Script>
 	<mx:Button x="288" y="316" label="Send" click="send();"/>
-	<mx:Button x="350" y="316" label="Close" click="socket.close();"/>
-	<mx:Button x="414" y="316" label="Connect" click="socket.connect();"/>
+	<mx:Button x="461" y="381" label="Close" click="socket.close();"/>
+	<mx:Button x="381" y="381" label="Connect" click="connect();"/>
 	<mx:TextArea x="10" y="10" width="476" height="298" id="chat"/>
 	<mx:List x="494" y="8" width="208" height="300" id="list" labelField="name"></mx:List>
 	<mx:TextInput x="10" y="316" width="270" id="msg"/>
+	<mx:TextInput x="151" y="381" width="157" id="host" text="localhost"/>
+	<mx:TextInput x="316" y="381" width="57" id="port" text="15000"/>
 </mx:Application>
