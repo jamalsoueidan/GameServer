@@ -11,7 +11,7 @@ require File.dirname(__FILE__) + '/../config/environment'
 require File.dirname(__FILE__) + '/../socket/ruby/server'
 
 EventMachine::run {
-  host, port = "0.0.0.0", 15000
+  host, port = "localhost", 15000
   puts "Now accepting connections on address #{host}, port #{port}..."
   EventMachine::start_server host, port, SocketServer
 }

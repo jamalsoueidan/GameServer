@@ -22,6 +22,19 @@ module SocketServer
   end
 
   def receive_data data
+    
+    if data[1..19] == "policy-file-request"
+      send_data '<?xml version="1.0"?>
+      <!DOCTYPE cross-domain-policy SYSTEM "/xml/dtds/cross-domain-policy.dtd">
+      <cross-domain-policy> 
+         <site-control permitted-cross-domain-policies="master-only"/>
+         <allow-access-from domain="*" to-ports="*" />
+      </cross-domain-policy>'
+      p "sent policy file"
+      close_connection_after_writing
+      return
+    end
+    
     # parse received data
     request = JSON.parse(data)
 
@@ -40,12 +53,14 @@ module SocketServer
   end
   
   def unbind
-    instance = CloseRequest.new
-    instance.connection = self
-    instance.execute
+    if @player
+      instance = CloseRequest.new
+      instance.connection = self
+      instance.execute
     
-    $list.delete(@player.id)
-    puts "-- someone disconnected from the socket server: " + $list.length.to_s
+      $list.delete(@player.id)
+      puts "-- someone disconnected from the socket server: " + $list.length.to_s
+    end
   end
 end
 
