@@ -2,6 +2,9 @@
 <mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" creationComplete="creationComplete();">
 	<mx:Script>
 		<![CDATA[
+			import com.game.events.PlayerListEvent;
+			import com.firebug.logger.Logger;
+			import com.game.events.JoinRoomEvent;
 			import com.game.requests.JoinRoomRequest;
 			import com.game.net.Game;
 			import com.game.net.Connection;
@@ -18,14 +21,19 @@
 			
 			public function creationComplete():void {
 				socket = new Game();
+				socket.addEventListener(JoinRoomEvent.RESPONSE, joinedRoom);
+				socket.addEventListener(PlayerListEvent.RESPONSE, playerList);
 			}
 			
+			private function joinedRoom(evt:JoinRoomEvent):void {
+				Logger.log("room joined");
+			}
 			
-			private function joinGame():void {
-				
+			private function playerList(evt:PlayerListEvent):void {
+				Logger.log(evt.players);
 			}
 		]]>
 	</mx:Script>
 	<mx:TextArea x="0" y="0" width="100%" height="534" id="console"/>
-	<mx:Button x="219" y="542" label="JoinGame" click="joinGame();"/>
+	<mx:Button x="219" y="542" label="JoinGame"/>
 </mx:Application>

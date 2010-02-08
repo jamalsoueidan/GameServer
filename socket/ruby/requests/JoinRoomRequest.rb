@@ -23,6 +23,7 @@ class JoinRoomRequest < Request
       p "Player name logged: " + current_user.name
       player = current_user.create_player
       player.room_id = room.id
+      player.user_name = current_user.name
       player.save
       
       @connection.player = player

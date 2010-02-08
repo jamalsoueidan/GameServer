@@ -5,7 +5,7 @@ package com.game.core
 		private var _object:Object;
 		
 		public function get id():Number {
-			return _object["name"];
+			return Number(_object["id"]);
 		}
 		
 		public function get name():String {

@@ -2,6 +2,7 @@ package com.game.net
 {
 	import com.adobe.serialization.json.JSON;
 	import com.firebug.logger.Logger;
+	import com.game.events.ConnectionEvent;
 	
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
@@ -13,11 +14,10 @@ package com.game.net
 	import flash.system.Security;
 	import flash.utils.ByteArray;
 	import flash.utils.Timer;
-	
-	import mx.logging.Log;
 			
 	[Event(name="close", type="flash.event.Event")]
 	[Event(name="connect", type="flash.event.Event")]
+	[Event(name="update", type="com.game.events.ConnectionEvent")]
 	
 	public class Connection extends EventDispatcher
 	{
@@ -72,7 +72,7 @@ package com.game.net
 			Logger.log(evt.type);
 			var str:String = socket.readUTFBytes(socket.bytesAvailable);
 			var array:Array = str.split("][");
-			while(array.length>0) dispatchCustom(array.pop());
+			while(array.length>0) dispatchCustom(array.shift());
 		}
 		
 		private function dispatchCustom(value:String):void {
@@ -80,7 +80,9 @@ package com.game.net
 			if ( value.substr(-1) == "}" ) value += "]";
 
 			Logger.log(value);
-			var object:Object = JSON.decode(value);
+			var array:Array = JSON.decode(value);
+			
+			dispatchEvent(new ConnectionEvent(ConnectionEvent.UPDATE, array.pop()));
 		}
 		
 		private function securityErrorHandler(evt:SecurityErrorEvent):void {

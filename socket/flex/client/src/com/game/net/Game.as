@@ -1,11 +1,13 @@
 package com.game.net
 {
-	import com.game.requests.JoinRoomRequest;
-	import com.game.requests.Request;
+	import com.game.events.*;
+	import com.game.requests.*;
 	
 	import flash.events.Event;
+	import flash.events.EventDispatcher;
+	import flash.utils.getDefinitionByName;
 	
-	public class Game
+	public class Game extends EventDispatcher
 	{
 		private var _connection:Connection;
 		
@@ -13,7 +15,7 @@ package com.game.net
 		{
 			_connection = new Connection();
 			_connection.addEventListener(Event.CONNECT, connected);
-			_connection.addEventListener(Event.CLOSE, closed);
+			_connection.addEventListener(ConnectionEvent.UPDATE, update);
 			_connection.connect();
 		}
 		
@@ -21,36 +23,36 @@ package com.game.net
 			var joinRoomRequest:JoinRoomRequest = new JoinRoomRequest();
 			joinRoomRequest.salt = "jamal"
 			joinRoomRequest.name = "Jamal"
-			_connection.send(joinRoomRequest.object);
-		}
-		
-		private function closed(evt:Event):void {
 			
+			_connection.send(joinRoomRequest.object);
 		}
 		
 		public function send(request:Request):void {
 			//_game.send(request);
 		}
 		
-		private function updated():void {
-			/*var object:Object = evt.object["object"];
+		private function update(evt:ConnectionEvent):void {
+			var object:Object = evt.object;
 			
-			var className:String = object["class_name"];
-			var eventName:String = String(object["event_name"]);
+			var className:String = object["className"];
+			className = className.replace("Request", "Event");
 			
-			var words:Array = className.split("_");
-			var realClassName:String = "";
-			for each( var word:String in words) {
-				realClassName += word.charAt(0).toUpperCase() + word.substr(1);
+			var eventName:String = String(object["eventName"]);
+			if ( eventName == "undefined" ) {
+				eventName = className + "Response";
 			}
-						
-			trace("LekhaGame => ", realClassName, eventName);
-			var classObject:Object = getDefinitionByName("lekha.events." + realClassName + "Event");
-			var eventObject:IGameEvent = new classObject(eventName);			
-			eventObject.data = evt.object;
-			dispatchEvent(eventObject as Event);*/
+			
+			PlayerListEvent
+			JoinRoomEvent
+			
+			
+			trace("className:", "com.game.events." + className);
+			trace("eventName:", eventName);
+			 
+			var classObject:Object = getDefinitionByName("com.game.events." + className);
+			var event:RequestEvent = new classObject(eventName, object) as RequestEvent;
+			dispatchEvent(event);
 		}
-
 
 	}
 }

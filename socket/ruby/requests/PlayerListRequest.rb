@@ -6,14 +6,13 @@ class PlayerListRequest < Request
 
     user_list = Array.new
 
-    players = @connection.player.room.players.find(:all, :include => :user)
-    
+    players = Player.find(:all, :conditions => {:room_id => @connection.player.room_id})
     if players.length > 0
       players.each do |player|
-      user_list.push({:name => player.id, :id => player.user_id})
+        user_list.push({:name => player.user_name, :id => player.id})
       end
+      
+      send_all({:users => user_list})
     end
-    
-    send_all({:users => user_list})
   end
 end
