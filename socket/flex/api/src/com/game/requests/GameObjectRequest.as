@@ -17,7 +17,7 @@ package com.game.requests
 			_object["className"] = "GameObjectRequest";
 		}
 		
-		public function addKeyValue(key:String, value:String):void {
+		public function addKeyValue(key:String, value:*):void {
 			validateKey(key);			
 			_object[key] = value;
 		}

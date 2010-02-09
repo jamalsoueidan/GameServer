@@ -46,19 +46,19 @@ package com.game.net
 		}
 		
 		private function connectHandler(evt:Event):void {
-			Logger.log(evt.type);
+			//Logger.log(evt.type);
 			
 			dispatchEvent(evt);
 		}
 		
 		private function closeHandler(evt:Event):void {
-			Logger.log(evt.type);
+			//Logger.log(evt.type);
 			
 			dispatchEvent(evt);
 		}
 		
 		private function socketDataHandler(evt:ProgressEvent):void {
-			Logger.log(evt.type);
+			//Logger.log(evt.type);
 			var str:String = socket.readUTFBytes(socket.bytesAvailable);
 			var array:Array = str.split("][");
 			while(array.length>0) dispatchCustom(array.shift());
@@ -68,18 +68,18 @@ package com.game.net
 			if ( value.substring(0, 1) == "{" ) value = "[" + value;
 			if ( value.substr(-1) == "}" ) value += "]";
 
-			Logger.log(value);
+			//Logger.log(value);
 			var array:Array = JSON.decode(value);
 			
-			dispatchEvent(new ConnectionEvent(ConnectionEvent.UPDATE, array.pop()));
+			dispatchEvent(new ConnectionEvent(ConnectionEvent.ON_DATA, array.pop()));
 		}
 		
 		private function securityErrorHandler(evt:SecurityErrorEvent):void {
-			Logger.error(evt.type, evt.text);
+			//Logger.error(evt.type, evt.text);
 		}
 		
 		private function ioErrorHandler(evt:IOErrorEvent):void {
-			Logger.error(evt.type, evt.text);
+			//Logger.error(evt.type, evt.text);
 		}
 		
 		public function send(object:Object):void {

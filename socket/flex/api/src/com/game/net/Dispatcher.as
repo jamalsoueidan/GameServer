@@ -18,7 +18,7 @@ package com.game.net
 			if ( !_connection ) {
 				_connection = new Connection();
 				_connection.addEventListener(Event.CONNECT, connected);
-				_connection.addEventListener(ConnectionEvent.UPDATE, update); 
+				_connection.addEventListener(ConnectionEvent.ON_DATA, update); 
 				_connection.connect();
 			}
 		}
