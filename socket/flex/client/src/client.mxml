@@ -2,32 +2,25 @@
 <mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute">
 	<mx:Script>
 		<![CDATA[
-			import com.game.requests.PublicMessageRequest;
-			import com.game.events.PublicMessageEvent;
-			import com.game.events.PlayerListEvent;
-			import com.firebug.logger.Logger;
-			import com.game.events.JoinRoomEvent;
-			import com.game.requests.JoinRoomRequest;
-			import com.game.net.Game;
-			import com.game.net.Connection;
 			import mx.utils.ObjectUtil;
-			import com.adobe.serialization.json.JSON;
+			import requests.CustomRequest;
+			import events.CustomEvent;
+			import com.game.events.*;
+			import com.game.net.*;
+			import com.game.requests.*;
+			import com.game.core.*;
+			import com.firebug.logger.Logger;
 			
-			private var socket:Game;
-			private var timer:Timer;
+			private var _game:Game;
 			
-			private var receive_cache_byta:ByteArray = new ByteArray;
-			private var receive_cache_do_phase:uint = 0;
-			private var receive_encode_type:uint = 0;
-			private var receive_data_size:uint = 0;	
-			
-			private function connect():void {
-				socket = Game.getInstance();
-				socket.addEventListener(JoinRoomEvent.RESPONSE, joinedRoom);
-				socket.addEventListener(PlayerListEvent.RESPONSE, playerList);
-				socket.addEventListener(PublicMessageEvent.RESPONSE, publicMessage);
-				socket.addEventListener(Event.CONNECT, connected);
-				socket.connect(host.text, Number(port.text));
+			private function connect():void {				
+				_game = Game.getInstance();
+				_game.addEventListener(JoinRoomEvent.RESPONSE, joinedRoom);
+				_game.addEventListener(PlayerListEvent.RESPONSE, playerList);
+				_game.addEventListener(PublicMessageEvent.RESPONSE, publicMessage);
+				_game.addEventListener(CustomEvent.RESPONSE, customEvent);
+				_game.addEventListener(Event.CONNECT, connected);
+				_game.connect();
 			}
 			
 			private function joinedRoom(evt:JoinRoomEvent):void {
@@ -41,7 +34,7 @@
 				joinRoomRequest.salt = "jamal"
 				joinRoomRequest.name = "Jamal"
 			
-				socket.send(joinRoomRequest);
+				_game.send(joinRoomRequest);
 			}
 			
 			private function publicMessage(evt:PublicMessageEvent):void {
@@ -59,12 +52,23 @@
 				message.text = msg.text;
 				msg.text = "";
 				msg.setFocus();
-				socket.send(message);
+				_game.send(message);
+				
+				var gameObjectRequest:GameObjectRequest = new GameObjectRequest(CustomEvent, CustomEvent.RESPONSE);
+				gameObjectRequest.addKeyValue("gameObjectRequest", "gameObjectRequest");
+				_game.send(gameObjectRequest);
+				
+				var customRequest:CustomRequest = new CustomRequest();
+				customRequest.addKeyValue("customRequest", "customRequest");
+				_game.send(customRequest);
+			}
+			
+			private function customEvent(evt:CustomEvent):void {
+				trace("dispatched customEvent", mx.utils.ObjectUtil.toString(evt.object));
 			}
 		]]>
 	</mx:Script>
 	<mx:Button x="288" y="316" label="Send" click="send();"/>
-	<mx:Button x="461" y="381" label="Close" click="socket.close();"/>
 	<mx:Button x="381" y="381" label="Connect" click="connect();"/>
 	<mx:TextArea x="10" y="10" width="476" height="298" id="chat"/>
 	<mx:List x="494" y="8" width="208" height="300" id="list" labelField="name"></mx:List>
