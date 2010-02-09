@@ -8,14 +8,15 @@ class Request
     object["className"] = self.class.to_s
     object["player"] = {:name => connection.player.user_name, :id => connection.player.id}
     p "Sending to #{connection.player.user_name}"
-    
+    p "Object: " + object.inspect
     connection.send_data JSON.generate([object])
   end
   
   def send_all(object)
     object["className"] = self.class.to_s
     object["player"] = {:name => connection.player.user_name, :id => connection.player.id}
-    
+    p "Object: " + object.inspect
+        
     json_object = JSON.generate([object])
     
     p "Sending to all players (#{SocketServer.players.length})"

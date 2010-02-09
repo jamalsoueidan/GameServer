@@ -1,5 +1,7 @@
 package com.game.requests
 {
+	import com.game.utils.ClassUtils;
+	
 	import flash.utils.getQualifiedClassName;
 	
 	public class Request
@@ -7,16 +9,14 @@ package com.game.requests
 		protected var _object:Object = {};
 		
 		public function Request():void {
-			setRequest();	
+			setRequest();
 		}
 		
-		private function setRequest():void {
-			var packageName:String = getQualifiedClassName(this);
-			var className:String = packageName.substr(packageName.lastIndexOf(":") + 1);
-			_object["className"] = className;
+		protected function setRequest():void {
+			_object["className"] = ClassUtils.getName(this);
 		}
 		
-		public function get object():Object {
+		public function get object():Object {			
 			return _object;
 		}
 		

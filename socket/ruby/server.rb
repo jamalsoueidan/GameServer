@@ -34,6 +34,29 @@ module SocketServer
       close_connection_after_writing
       return
     end
+
+    datas = data.split('}{')
+    while(datas.length>0) do
+      parse(datas.shift)
+    end
+    
+  end
+
+  def player=(value)
+    @player = value
+    $list[value.id] = self
+    p "-- new user is added:" + $list.length.to_s
+  end
+  
+  def parse(data)
+    if data[data.length-1..data.length] != "}"
+      data += "}"
+    end
+    if data[0..0] != "{"
+      data = "{" + data
+    end
+    
+    p "Parsing: " + data
     
     # parse received data
     request = JSON.parse(data)
@@ -44,12 +67,6 @@ module SocketServer
     instance.object = request
     instance.connection = self
     instance.execute
-  end
-
-  def player=(value)
-    @player = value
-    $list[value.id] = self
-    p "-- new user is added:" + $list.length.to_s
   end
   
   def unbind

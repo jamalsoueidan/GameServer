@@ -46,15 +46,24 @@ package com.game.net
 				eventName = className + "Response";
 			}
 			
-			PlayerListEvent
-			JoinRoomEvent
-			
 			trace("className:", "com.game.events." + className);
 			trace("eventName:", eventName);
 			 
 			var classObject:Object = getDefinitionByName("com.game.events." + className);
-			var event:RequestEvent = new classObject(eventName, object) as RequestEvent;
-			dispatchEvent(event);
+			// check if this is gameObjectEvent with custom event class
+			if ( className == "GameObjectEvent" ) {
+				if ( object["classDispatcher"] ) {
+					
+					trace(" - className changed:", object["classDispatcher"]);
+					trace(" - eventName changed:", object["eventDispatcher"]);
+					
+					eventName = object["eventDispatcher"];
+					classObject = getDefinitionByName(object["classDispatcher"]);
+				}	
+			}
+			
+			var event:IRequestEvent = new classObject(eventName, object);			
+			dispatchEvent(event as Event);
 		}
 
 	}

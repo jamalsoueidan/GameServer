@@ -3,8 +3,10 @@ package com.game.events
 	import com.game.core.Player;
 	
 	import flash.events.Event;
+	
+	import mx.utils.ObjectUtil;
 
-	public class RequestEvent extends Event
+	public class RequestEvent extends Event implements IRequestEvent
 	{
 		protected var _object:Object;
 		
