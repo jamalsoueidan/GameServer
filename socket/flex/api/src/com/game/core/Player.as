@@ -16,5 +16,14 @@ package com.game.core
 			_object = object;
 		}
 
+		public function addAttribute(key:String, value:*):void {
+			if ( key != "id" && key != "name" ) {
+				_object[key] = value;
+			}
+		}
+		
+		public function getAttribute(key:String):* {
+			return _object[key];
+		}
 	}
 }
