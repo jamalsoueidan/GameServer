@@ -55,6 +55,8 @@ package com.game.core
 			if ( !_room ) {
 				_room = evt.room;
 			}
+			
+			_player = evt.player;
 		}
 		
 		private function playerList(evt:PlayerListEvent):void {
