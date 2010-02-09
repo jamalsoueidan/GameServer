@@ -19,6 +19,12 @@ package com.game.requests
 		public function get object():Object {
 			return _object;
 		}
+		
+		protected function validateKey(value:String):void {
+			if ( value == "className" ) {
+				throw new Error("You cannot use className as key in object");
+			}
+		}
 
 	}
 }

@@ -1,5 +1,7 @@
 package com.game.events
 {
+	import com.game.core.Room;
+	
 	public class JoinRoomEvent extends RequestEvent
 	{
 		public static var RESPONSE:String = "JoinRoomEventResponse";
@@ -14,6 +16,10 @@ package com.game.events
 		
 		public function JoinRoomEvent(type:String, object:Object) {
 			super(type, object);
+		}
+		
+		public function get room():Room {
+			return new Room(_object);	
 		}
 		
 		public function get maxPlayers():Number {

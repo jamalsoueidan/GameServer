@@ -1,19 +1,31 @@
 package com.game.net
 {
-	import com.game.events.*;
-	import com.game.requests.*;
+	import com.game.core.Player;
+	import com.game.core.Room;
+	import com.game.events.JoinRoomEvent;
+	import com.game.events.PlayerListEvent;
+	import com.game.events.StartGameEvent;
 	
-	import flash.events.Event;
-	import flash.events.EventDispatcher;
-	import flash.utils.getDefinitionByName;
-	
-	[Event(name="close", type="flash.event.Event")]
-	[Event(name="connect", type="flash.event.Event")]
-	
-	public class Game extends EventDispatcher
+	public class Game extends Dispatcher
 	{
-		private var _connection:Connection;
 		private static var _instance:Game;
+		private var _dispatcher:Game;
+		
+		private var _room:Room;
+		private var _player:Player;
+		private var _allPlayers:Array;
+		
+		public function get currentPlayer():Player {
+			return _player;
+		}
+		
+		public function get currentRoom():Room {
+			return _room;
+		}
+		
+		public function get allPlayers():Array {
+			return _allPlayers;
+		}
 		
 		public static function getInstance():Game {
 			if ( !_instance ) {
@@ -28,57 +40,24 @@ package com.game.net
 				throw new Error("Only one instance of game");
 			}
 			
+			addEventListener(JoinRoomEvent.RESPONSE, joinedRoom);
+			addEventListener(PlayerListEvent.RESPONSE, playerList);
 			_instance = this;
 		}
 		
-		public function connect(host:String, port:Number):void {
-			if ( !_connection ) {
-				_connection = new Connection();
-				_connection.addEventListener(Event.CONNECT, connected);
-				_connection.addEventListener(ConnectionEvent.UPDATE, update); 
-				_connection.connect(host, port);
+		private function joinedRoom(evt:JoinRoomEvent):void {
+			removeEventListener(JoinRoomEvent.RESPONSE, joinedRoom);
+			if ( !_room ) {
+				_room = evt.room;
 			}
 		}
 		
-		public function close():void {
-			_connection.close();
-		}
-		
-		private function connected(evt:Event):void {
-			dispatchEvent(evt);
+		private function playerList(evt:PlayerListEvent):void {
+			_allPlayers = evt.players;
 			
-			/*var joinRoomRequest:JoinRoomRequest = new JoinRoomRequest();
-			joinRoomRequest.salt = "jamal"
-			joinRoomRequest.name = "Jamal"
-			
-			_connection.send(joinRoomRequest.object);*/
-		}
-		
-		public function send(request:Request):void {
-			_connection.send(request.object);
-		}
-		
-		private function update(evt:ConnectionEvent):void {
-			var object:Object = evt.object;
-			
-			var className:String = object["className"];
-			className = className.replace("Request", "Event");
-			
-			var eventName:String = String(object["eventName"]);
-			if ( eventName == "undefined" ) {
-				eventName = className + "Response";
+			if ( allPlayers.length == _room.maxPlayers ) {
+				dispatchEvent(new StartGameEvent(StartGameEvent.ALL_PLAYERS_JOINED, {}));
 			}
-			
-			PlayerListEvent
-			JoinRoomEvent
-			
-			trace("className:", "com.game.events." + className);
-			trace("eventName:", eventName);
-			 
-			var classObject:Object = getDefinitionByName("com.game.events." + className);
-			var event:RequestEvent = new classObject(eventName, object) as RequestEvent;
-			dispatchEvent(event);
 		}
-
 	}
 }
