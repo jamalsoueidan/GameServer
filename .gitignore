@@ -18,3 +18,4 @@ tmp/*
 test/*
 vendor/plugins/*
 socket/flex/client/bin-debug/*
+socket/flex/api/bin/*

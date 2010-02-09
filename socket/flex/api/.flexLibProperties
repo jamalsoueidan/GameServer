@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<flexLibProperties version="1">
+  <includeClasses>
+    <classEntry path="com.adobe.crypto.MD5"/>
+    <classEntry path="com.adobe.crypto.SHA1"/>
+    <classEntry path="com.adobe.crypto.SHA224"/>
+    <classEntry path="com.adobe.crypto.SHA256"/>
+    <classEntry path="com.adobe.crypto.WSSEUsernameToken"/>
+    <classEntry path="com.adobe.errors.IllegalStateError"/>
+    <classEntry path="com.adobe.images.BitString"/>
+    <classEntry path="com.adobe.images.JPGEncoder"/>
+    <classEntry path="com.adobe.images.PNGEncoder"/>
+    <classEntry path="com.adobe.net.DynamicURLLoader"/>
+    <classEntry path="com.adobe.net.IURIResolver"/>
+    <classEntry path="com.adobe.net.URI"/>
+    <classEntry path="com.adobe.net.URIEncodingBitmap"/>
+    <classEntry path="com.adobe.net.proxies.RFC2817Socket"/>
+    <classEntry path="com.adobe.serialization.json.JSON"/>
+    <classEntry path="com.adobe.serialization.json.JSONDecoder"/>
+    <classEntry path="com.adobe.serialization.json.JSONEncoder"/>
+    <classEntry path="com.adobe.serialization.json.JSONParseError"/>
+    <classEntry path="com.adobe.serialization.json.JSONToken"/>
+    <classEntry path="com.adobe.serialization.json.JSONTokenType"/>
+    <classEntry path="com.adobe.serialization.json.JSONTokenizer"/>
+    <classEntry path="com.adobe.utils.ArrayUtil"/>
+    <classEntry path="com.adobe.utils.DateUtil"/>
+    <classEntry path="com.adobe.utils.DictionaryUtil"/>
+    <classEntry path="com.adobe.utils.IntUtil"/>
+    <classEntry path="com.adobe.utils.NumberFormatter"/>
+    <classEntry path="com.adobe.utils.StringUtil"/>
+    <classEntry path="com.adobe.utils.XMLUtil"/>
+    <classEntry path="com.adobe.webapis.ServiceBase"/>
+    <classEntry path="com.adobe.webapis.URLLoaderBase"/>
+    <classEntry path="com.adobe.webapis.events.ServiceEvent"/>
+    <classEntry path="com.firebug.logger.Logger"/>
+    <classEntry path="com.game.core.Player"/>
+    <classEntry path="com.game.events.ConnectionEvent"/>
+    <classEntry path="com.game.events.JoinRoomEvent"/>
+    <classEntry path="com.game.events.PlayerListEvent"/>
+    <classEntry path="com.game.events.PublicMessageEvent"/>
+    <classEntry path="com.game.events.RequestEvent"/>
+    <classEntry path="com.game.manager.DispatchManager"/>
+    <classEntry path="com.game.manager.ObjectConveter"/>
+    <classEntry path="com.game.net.Connection"/>
+    <classEntry path="com.game.net.Game"/>
+    <classEntry path="com.game.requests.GameObjectRequest"/>
+    <classEntry path="com.game.requests.JoinRoomRequest"/>
+    <classEntry path="com.game.requests.PublicMessageRequest"/>
+    <classEntry path="com.game.requests.Request"/>
+  </includeClasses>
+  <includeResources/>
+  <namespaceManifests/>
+</flexLibProperties>
