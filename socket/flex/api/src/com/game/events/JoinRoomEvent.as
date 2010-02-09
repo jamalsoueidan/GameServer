@@ -23,11 +23,11 @@ package com.game.events
 		}
 		
 		public function get maxPlayers():Number {
-			return _object["max_players"];
+			return Number(_object["max_players"]);
 		}
 		
 		public function get joinedPlayers():Number {
-			return _object["joined_players"];
+			return Number(_object["joined_players"]);
 		}
 	}
 }

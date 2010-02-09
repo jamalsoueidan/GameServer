@@ -4,7 +4,7 @@ package com.game.events
 
 	public class ConnectionEvent extends Event
 	{
-		public static const UPDATE:String = "update";
+		public static const ON_DATA:String = "update";
 		
 		private var _object:Object;
 		
