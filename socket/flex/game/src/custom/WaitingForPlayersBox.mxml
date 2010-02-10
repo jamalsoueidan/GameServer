@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" horizontalCenter="-1" verticalCenter="0" backgroundColor="#CBF3FF" width="354.5" height="76">
+<mx:Script>
+	<![CDATA[
+		private var _text:String;
+		private var _textChanged:Boolean;
+		
+		public function set text(value:String):void {
+			_text = value;
+			_textChanged = true;
+			invalidateProperties();	
+		}
+		
+		override protected function commitProperties():void {
+			super.commitProperties();
+			
+			if ( _textChanged ) {
+				_textChanged = false;
+				waiting.text = _text;
+			}
+		}
+	]]>
+</mx:Script>
+	<mx:TextArea id="waiting" wordWrap="true" editable="false" fontSize="14" backgroundColor="#CBF3FF" width="334" height="47" fontWeight="bold" textAlign="center"  horizontalCenter="0" verticalCenter="0" selectable="false" themeColor="#CBF3FF" borderColor="#CBF3FF"/>
+</mx:Canvas>

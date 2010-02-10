@@ -1,4 +1,187 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute">
-	
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" applicationComplete="complete();" enabled="false">
+	<mx:Script>
+		<![CDATA[
+			import com.game.events.StartGameEvent;
+			import com.game.events.PlayerListEvent;
+			import com.game.events.JoinRoomEvent;
+			import stages.visual.*;
+			
+			import com.lekha.core.*;
+			import com.lekha.display.*;
+			import com.lekha.events.*;
+			import com.lekha.stage.*;
+		
+			import com.firebug.logger.Logger;
+			
+			private var _game:LekhaGame;
+			private var _chat:Chat;
+			private var _board:Board;
+			private var _stage:IStage;
+			
+			private function complete():void {	 	
+				_game = new LekhaGame();
+				
+				Logger.info("1. start with login page to determine the login user");
+				_stage = new Login();
+				_stage.execute();
+				
+				addChild(_stage as Login);
+				
+				_board = Board.getInstance();
+				addChild(_board);
+				
+				_game.addEventListener(JoinRoomEvent.RESPONSE, joinedGame);
+				_game.addEventListener(StartGameEvent.ALL_PLAYERS_JOINED, startGame);
+			} 
+			
+			private function joinedGame(evt:JoinRoomEvent):void {
+				_game.removeEventListener(JoinRoomEvent.RESPONSE, joinedGame);
+				removeChild(_stage as Login);
+				_stage.terminate();
+				_stage = null;
+				
+				//-------------------------------------------------------------------------
+				//-------------------------------------------------------------------------
+				//-------------------------------------------------------------------------
+				
+				Logger.info("2. player have now accessed the login page, give him chat to message other players.");
+				
+				_chat = new Chat();
+				_chat.execute();
+				addChild(_chat);	
+			}
+			
+			private function startGame(evt:StartGameEvent):void {
+				_game.removeEventListener(StartGameEvent.ALL_PLAYERS_JOINED, startGame);
+				
+				//-------------------------------------------------------------------------
+				//-------------------------------------------------------------------------
+				//-------------------------------------------------------------------------
+				
+				Logger.info("3. now all players has joined the game, let them choose chair position.");
+				
+				_stage = new Table();
+				_stage.execute();
+				
+				
+				_game.addEventListener(ChairEvent.COMPLETE, allHaveTakenChairPosition);
+			}
+			
+			private function allHaveTakenChairPosition(evt:ChairEvent):void {
+				_game.removeEventListener(ChairEvent.COMPLETE, allHaveTakenChairPosition);
+				
+				_stage.terminate();
+				_stage = null;
+				
+				removeChild(_chat);
+				_chat.terminate();
+				_chat = null;
+				
+				//-------------------------------------------------------------------------
+				//-------------------------------------------------------------------------
+				//-------------------------------------------------------------------------
+				
+				Logger.info("4. we now want to know who will deal the cards so start.");
+				
+				_stage = new FindDealer();
+				_stage.execute();
+				
+				_game.addEventListener(FindDealerEvent.COMPLETE, dealerFound);
+			}
+			
+			private function dealerFound(evt:FindDealerEvent=null):void {
+				_game.removeEventListener(FindDealerEvent.COMPLETE, dealerFound);
+				
+				if ( evt == null ) {
+					_game.removeEventListener(PlayEvent.NEW_ROUND, newRound);
+				}
+				
+				_stage.terminate();
+				_stage = null;
+				
+				//-------------------------------------------------------------------------
+				//-------------------------------------------------------------------------
+				//-------------------------------------------------------------------------
+				
+				Logger.info("5. lets deal the cards");
+				var dealer:DealCards = new DealCards();
+				if ( evt ) {
+					dealer.dealerSession = evt.object["player_id"];
+				}
+				
+				_stage = dealer;
+				_stage.execute();
+				
+				_game.addEventListener(DealCardsEvent.COMPLETE, dealingCardsIsDone);
+			}
+			
+			private function dealingCardsIsDone(evt:DealCardsEvent):void {
+				_game.removeEventListener(DealCardsEvent.COMPLETE, dealingCardsIsDone);
+				
+				_stage.terminate();
+				
+				//-------------------------------------------------------------------------
+				//-------------------------------------------------------------------------
+				//-------------------------------------------------------------------------
+				
+				Logger.info("6. ask the next guy how many cards to exchange!");
+				_stage = new ExchangeCards();
+				_stage.execute();
+				
+				_game.addEventListener(ExchangeCardsEvent.COMPLETE, askIfSomebodyLikes);
+			}
+			
+			private function askIfSomebodyLikes(evt:ExchangeCardsEvent):void {
+				
+				_game.removeEventListener(ExchangeCardsEvent.COMPLETE, askIfSomebodyLikes);
+				
+				_stage.terminate();
+				_stage = null;
+				
+				//-------------------------------------------------------------------------
+				//-------------------------------------------------------------------------
+				//-------------------------------------------------------------------------
+				
+				Logger.info("7. ask if someone like to show queen or diamond 10");
+				_stage = new SomebodyLike();
+				_stage.execute();
+				
+				_game.addEventListener(SomebodyLikeEvent.COMPLETE, letGameStart);
+			}
+			
+			private function letGameStart(evt:SomebodyLikeEvent):void {
+				_game.removeEventListener(SomebodyLikeEvent.COMPLETE, letGameStart);
+				
+				_stage.terminate();
+				_stage = null;
+								
+				//-------------------------------------------------------------------------
+				//-------------------------------------------------------------------------
+				//-------------------------------------------------------------------------
+				
+				Logger.info("8. let the game start");
+				_stage = new Play();
+				_stage.execute();
+				
+				_game.addEventListener(PlayEvent.NEW_ROUND, newRound);
+				_game.addEventListener(PlayEvent.COMPLETE, gameOver);
+			}
+			
+			private function newRound(evt:PlayEvent):void {
+				_game.removeEventListener(PlayEvent.NEW_ROUND, newRound);
+				_game.removeEventListener(PlayEvent.COMPLETE, gameOver);
+				
+				dealerFound();
+			}
+			
+			private function gameOver(evt:PlayEvent):void {
+				_game.removeEventListener(PlayEvent.COMPLETE, gameOver);
+				
+				_stage.terminate();
+				_stage = null;
+			}
+			
+		]]>
+	</mx:Script>
 </mx:Application>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" horizontalCenter="0" verticalCenter="0" backgroundColor="#CBF3FF" width="354.5" height="98">
+	<mx:Script>
+		<![CDATA[
+			import com.lekha.events.ExchangeCardsEvent;
+			
+			private var _timerText:String;
+			private var _timerChanged:Boolean;
+			
+			public function set timer(value:String):void {
+				_timerText = value;
+				_timerChanged = true;
+				invalidateProperties();	
+			}
+			
+			private var _commentText:String;
+			private var _commentChanged:Boolean;
+			
+			public function set comment(value:String):void {
+				_commentText = value;
+				_commentChanged = true;
+				invalidateDisplayList();
+			}
+			
+			
+			private var _errorText:String;
+			private var _errorChanged:Boolean;
+			
+			public function set error(value:String):void {
+				_errorChanged = true;
+				_errorText = value;
+				invalidateProperties();	
+			}
+			
+			override protected function commitProperties():void {
+				super.commitProperties();
+				
+				if ( _timerChanged ) {
+					_timerChanged = false;
+					private_timer_text.text = _timerText;
+				}
+				
+				if ( _commentChanged ) {
+					_commentChanged = false;
+					private_comment_text.text = _commentText;
+				}
+				
+				if ( _errorChanged ) {
+					_errorChanged = false;
+					private_error_text.text = _errorText;
+				}
+			}
+			
+			private function imReady():void {
+				var evt:MouseEvent = new MouseEvent(MouseEvent.CLICK);
+				dispatchEvent(evt);
+			}
+		]]>
+	</mx:Script>
+	<mx:Label id="private_comment_text" x="20.25" y="9" width="314" height="32" textAlign="center" fontWeight="bold" fontSize="20"/>
+	<mx:Label id="private_error_text" x="20.25" y="39" width="314" height="21" textAlign="center" fontWeight="bold" fontSize="14" color="#FC1F14"/>
+	<mx:Label id="private_timer_text" x="294.5" y="74" width="60" height="24" textAlign="center" fontWeight="bold" fontSize="16" text=""/>
+	<mx:Button x="131.25" y="63" label="I'm Ready!" width="92" height="25" click="imReady();" id="imReadyButton"/>
+</mx:Canvas>

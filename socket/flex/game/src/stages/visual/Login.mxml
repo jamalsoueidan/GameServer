@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" implements="com.lekha.stage.IStage" width="368" height="52" horizontalCenter="0" verticalCenter="0" creationComplete="creationComplete();">
+	<mx:Script>
+		<![CDATA[
+			import com.game.requests.JoinRoomRequest;
+			import com.lekha.core.LekhaGame;
+			import mx.utils.ObjectUtil;
+			import mx.controls.Alert;
+			import mx.core.Application;
+			
+			private var _game:LekhaGame;
+			
+			private function creationComplete():void {
+				_game = LekhaGame.getInstance();
+				_game.addEventListener(Event.CONNECT, connected);
+				_game.connect();
+				
+				stage.focus = username;
+				username.setSelection(username.text.length, username.text.length);
+			}
+			
+			private function connected(evt:Event):void {
+				var domain:String = ExternalInterface.call('function () { return window.location.href; }');
+				if ( domain.lastIndexOf("=") != -1 ) {
+					var name:String = domain.substr(domain.lastIndexOf("=")+1);
+					if ( name != "" ) {
+						username.text = name;
+						joinGame();
+					}
+				}
+			}
+			
+			private function joinGame():void {
+				var joinRoomRequest:JoinRoomRequest = new JoinRoomRequest();
+				joinRoomRequest.salt = "jamal";
+				joinRoomRequest.name = username.text;
+			
+				_game.send(joinRoomRequest);
+			}
+			
+			private function keyboardDown(evt:KeyboardEvent):void {
+				if ( evt.keyCode == Keyboard.ENTER ) {
+					joinGame();
+				}
+			}
+			
+			public function terminate():void {
+				Application.application.removeEventListener(KeyboardEvent.KEY_DOWN, keyboardDown);
+			}
+			
+			public function execute():void {
+				Application.application.addEventListener(KeyboardEvent.KEY_DOWN, keyboardDown);
+			}
+		]]>
+	</mx:Script>
+	<mx:TextInput id="username"  width="260" height="50" fontSize="34"/>
+	<mx:Button label="Login" click="joinGame()" width="99" height="50" fontSize="16"/>
+</mx:HBox>

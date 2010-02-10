@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" implements="com.lekha.stage.IStage" width="587" height="366" horizontalCenter="0" verticalCenter="0">
+	<mx:Script>
+		<![CDATA[
+			import com.game.events.GameObjectEvent;
+			import com.game.requests.GameObjectRequest;
+			import com.game.requests.PublicMessageRequest;
+			import com.game.events.PlayerListEvent;
+			import com.game.events.PublicMessageEvent;
+			import mx.events.FlexEvent;
+			import mx.core.Application;
+			
+			import com.lekha.events.*;
+			import com.lekha.core.*;
+			
+			private var _game:LekhaGame;
+			
+			public function execute():void {
+				_game = LekhaGame.getInstance();
+				_game.addEventListener(PublicMessageEvent.RESPONSE, receivedMessage);
+				_game.addEventListener(PlayerListEvent.RESPONSE, userlistUpdate);
+				
+				_game.addEventListener(ChairEvent.CHOOSEN, chairIsChoosen);
+				_game.addEventListener(ChairEvent.REMOVED, chairIsChoosen);
+				
+				Application.application.addEventListener(KeyboardEvent.KEY_DOWN, keyboardDown);
+			}
+			
+			public function terminate():void {
+				_game.removeEventListener(PublicMessageEvent.RESPONSE, receivedMessage);
+				_game.removeEventListener(PlayerListEvent.RESPONSE, userlistUpdate);
+				
+				_game.removeEventListener(ChairEvent.CHOOSEN, chairIsChoosen);
+				_game.removeEventListener(ChairEvent.REMOVED, chairIsChoosen);
+				
+				_game = null;
+				
+				Application.application.removeEventListener(KeyboardEvent.KEY_DOWN, keyboardDown);
+			}
+			
+			private function keyboardDown(evt:KeyboardEvent):void {
+				if ( evt.keyCode == Keyboard.ENTER ) {
+					sendButton();
+				}
+			}
+			
+			private function chairIsChoosen(evt:ChairEvent):void {
+				if ( evt.type == ChairEvent.CHOOSEN ) {
+					if ( _game.currentPlayer.id == evt.player.id ) {
+						readyButton.enabled = startGame.visible = true;
+					}
+				} else {
+					if ( _game.currentPlayer.id == evt.player.id ) {
+						startGame.visible = false;
+					}
+				}
+			}
+			
+			private function sendButton(evt:MouseEvent=null):void {
+				if ( text_input.text != "" ) {
+					var msg:PublicMessageRequest = new PublicMessageRequest();
+					msg.text = text_input.text;
+					_game.send(msg); 
+					text_input.text = "";
+				} 
+			}
+			
+			private function receivedMessage(evt:PublicMessageEvent):void {
+				text_area.text = evt.player.name + ": " + evt.text + "\n" + text_area.text;
+			}
+			
+			private function userlistUpdate(evt:PlayerListEvent):void {
+				user_list.dataProvider = evt.players;
+			}
+			
+			private function ready():void {
+				var sendObject:GameObjectRequest = new GameObjectRequest(ChairEvent, ChairEvent.READY);
+				_game.send(sendObject);
+				
+				readyButton.enabled = false;
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:Button x="346" y="10" label="Send" click="sendButton();" fontSize="14"/>
+	<mx:TextInput x="10" y="10" id="text_input" width="328" fontSize="14"/>
+	<mx:TextArea x="10" y="40" width="401" height="174" id="text_area" fontSize="14"/>
+	<mx:List width="158" height="205"  x="419" y="9" id="user_list" labelField="name" fontSize="14"/>
+	<mx:Canvas x="179.5" y="220" height="71" id="startGame" visible="false">
+		<mx:Button x="0" y="27" label="START GAME" id="readyButton" click="ready();" fontSize="20" width="228" height="44" visible="true" borderColor="#25FF44" color="#02090A" fillAlphas="[1.0, 1.0]" fillColors="[#0CD71A, #0CD71A]"/>
+	<mx:Label x="16" y="1" text="Click here if you are ready" width="196" fontWeight="normal" fontSize="12" textAlign="center" textDecoration="underline"/>
+	</mx:Canvas>
+
+</mx:Canvas>
