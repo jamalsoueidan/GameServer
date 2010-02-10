@@ -4,8 +4,7 @@ package com.game.events
 	{
 		public static const RESPONSE:String = "GameObjectEventResponse";
 		
-		public function GameObjectEvent(type:String, object:Object)
-		{
+		public function GameObjectEvent(type:String, object:Object)  {
 			super(type, object);
 		}
 		
