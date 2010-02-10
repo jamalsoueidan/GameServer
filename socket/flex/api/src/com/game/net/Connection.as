@@ -12,6 +12,8 @@ package com.game.net
 	import flash.net.Socket;
 	import flash.system.Security;
 	import flash.utils.ByteArray;
+	
+	import mx.core.Application;
 			
 	[Event(name="close", type="flash.event.Event")]
 	[Event(name="connect", type="flash.event.Event")]
@@ -37,7 +39,16 @@ package com.game.net
 			socket.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
 		}
 		
-		public function connect(host:String="localhost", port:Number=15000):void {
+		public function connect():void {
+			var host:String = mx.core.Application.application.parameters.host;
+			var port:Number = 15000;
+			
+			if ( host == "" ) {
+				host = "localhost";
+			}
+			
+			Logger.log("Trying to connect to", host, port);
+			
 			socket.connect(host, port);
 		}
 		
