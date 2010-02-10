@@ -24,6 +24,7 @@ module SocketServer
   def receive_data data
     
     if data[1..19] == "policy-file-request"
+      p "Sent policy-file-request!"
       send_data '<?xml version="1.0"?>
       <!DOCTYPE cross-domain-policy SYSTEM "/xml/dtds/cross-domain-policy.dtd">
       <cross-domain-policy> 
