@@ -31,7 +31,6 @@ module SocketServer
          <site-control permitted-cross-domain-policies="master-only"/>
          <allow-access-from domain="*" to-ports="*" />
       </cross-domain-policy>'
-      p "sent policy file"
       close_connection_after_writing
       return
     end

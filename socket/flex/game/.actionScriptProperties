@@ -6,6 +6,7 @@
       <libraryPathEntry kind="4" path=""/>
       <libraryPathEntry kind="1" linkType="1" path="libs"/>
       <libraryPathEntry kind="3" linkType="1" path="/Users/jamalsoueidan/Documents/Rails/game_api/socket/flex/api/bin/api.swc" useDefaultLinkType="false"/>
+      <libraryPathEntry kind="3" linkType="1" path="src/flash/ChairDisplay.swc" useDefaultLinkType="false"/>
     </libraryPath>
     <sourceAttachmentPath/>
   </compiler>
