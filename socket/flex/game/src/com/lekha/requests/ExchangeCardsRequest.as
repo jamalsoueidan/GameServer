@@ -5,9 +5,11 @@ package com.lekha.requests
 
 	public class ExchangeCardsRequest extends GameObjectRequest
 	{
-		public function ExchangeCardsRequest(eventDispatcher:String):void {
+		public function ExchangeCardsRequest(eventDispatcher:String, filter:Object=null):void {
 			this.classDispatcher = ExchangeCardsEvent;
 			this.eventDispatcher = eventDispatcher;
+			
+			filterObject(filter);
 		}	
 	}
 }

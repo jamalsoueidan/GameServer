@@ -2,20 +2,19 @@ package com.lekha.display
 {
 	import com.game.core.Player;
 	import com.game.requests.GameObjectRequest;
+	import com.lekha.commands.*;
 	import com.lekha.core.*;
 	import com.lekha.events.*;
-	import com.lekha.managers.DealManager;
-	import com.lekha.stage.*;
+	import com.lekha.managers.*;
 	
 	import flash.events.Event;
 	import flash.events.MouseEvent;
+	import flash.text.TextField;
 	
-	import mx.containers.VBox;
 	import mx.controls.*;
-	import mx.core.Application;
 	import mx.events.FlexEvent;
 
-	public class Chair extends VBox
+	public class Chair extends ChairDisplay
 	{
 		public static const LEFT:String = "4";
 		public static const TOP:String = "3";
@@ -23,13 +22,9 @@ package com.lekha.display
 		public static const BOTTOM:String = "1";
 		public static const PLACEMENTS:Array = [BOTTOM, RIGHT, TOP, LEFT];
 		
-		private var _button:Button;
-		private var _buttonText:String;
-		private var _buttonChanged:Boolean;
+		private var _board:Board;
 		
-		private var _name:Text;
-		private var _nameText:String;
-		private var _nameChanged:Boolean;
+		private var _name:TextField;
 		
 		private var _placement:String;
 		private var _placementChanged:Boolean;
@@ -58,16 +53,14 @@ package com.lekha.display
 			return _statistic;
 		}
 		
-		public function isAllowedMovement():Boolean {
-			return _allowMovement;
-		}
-		
 		public function Chair() {
 			super();
 			
+			mouseChildren = false;
+			
 			resetPlayer();
 			
-			setStyle("backgroundColor", "#F21A1A"); 
+			_board = Board.getInstance();
 					
 			_game = LekhaGame.getInstance();
 			_hand = new Hand();
@@ -88,7 +81,7 @@ package com.lekha.display
 		}
 		
 		private function statisticChanged(evt:Event):void {
-			_button.label = _statistic.total.toString() + " points";
+			//_button.label = _statistic.total.toString() + " points";
 		}
 			
 		public function set position(value:Number):void {
@@ -99,75 +92,35 @@ package com.lekha.display
 			return _position;
 		}
 		
-		override protected function createChildren():void {
-			super.createChildren();
+		private function creationComplete(evt:FlexEvent):void {			
+			this["green"].visible = false;
+			this["yellow"].visible = false;
 			
-			if ( !_button ) {
-				_button = new Button();
-				_button.label = "0 points";
-				_button.mouseEnabled = _button.mouseChildren = false;
-				addChild(_button);
-			}
+			_name = this["player_name"];
 			
-			if ( !_name ) {
-				_name = new Text();
-				_name.mouseEnabled = _name.mouseChildren = false
-				_name.text = "Empty";
-				addChild(_name);
-			}
-		}
-		
-		private function creationComplete(evt:FlexEvent):void {
-			_game.addEventListener(ChairEvent.COMPLETE, removeChangePosition);
-			
-			addEventListener(MouseEvent.CLICK, click);
-			
-		 	lockMovement();
-		}
-		
-		private function removeChangePosition(evt:ChairEvent):void {
-			removeEventListener(MouseEvent.CLICK, click);
-			
-			_game.removeEventListener(ChairEvent.COMPLETE, removeChangePosition);
-		}
-		
-		private function click(evt:MouseEvent):void {
-			if ( player.id == _game.currentPlayer.id ) {
-				return;
-			}
-			
-			if ( player.id > 0 ) {
-				Alert.show("Chair is already taken, choose another one");
-				return;
-			}
-			
-			var sendObject:GameObjectRequest = new GameObjectRequest(ChairEvent, ChairEvent.CHOOSEN);
-			sendObject.addKeyValue("position", _position);
-			_game.send(sendObject);
-			
-			player = _game.currentPlayer;
-			
+			setPosition();
 		}
 		
 		public function set player(value:Player):void {
 			_player = value;
 			
 			if ( _player ) {
-				//_buttonText = value.session;
-				_nameText = value.name;
+				_name.text = value.name;
 			} else {
-				
 				resetPlayer();
-				setStyle("backgroundColor", "#F21A1A");
-				
-				_buttonText = "Button";
-				_nameText = "Empty chair";
+				_name.text = "";
 			}
 			
-			//_buttonChanged = true;
-			_nameChanged = true;
+			this["green"].visible = false;
+			this["yellow"].visible = false;
 			
-			invalidateProperties();
+			if ( player.id == _game.currentPlayer.id ) {
+				this["green"].visible = true;
+			} else {
+				if ( player.id > 0 ) {
+					this["yellow"].visible = true;
+				}
+			}
 		}
 		
 		public function get player():Player {
@@ -183,75 +136,42 @@ package com.lekha.display
 		
 		public function set placement(value:String):void {
 			_placement = value;
-			_placementChanged = true;
-			invalidateDisplayList();
 		}
 		
 		public function get placement():String {
 			return _placement;
 		}
 		
-		override protected function commitProperties():void {
-			super.commitProperties();
-			
-			if ( _buttonChanged ) {
-				_button.label = _buttonText;
-				_buttonChanged = false;
-			}
-			
-			if ( _nameChanged ) {
-				_name.text = _nameText;
-				_nameChanged = false;
-			}
-		}
 		
 		// set placement to null to remove stylish
-		public function lockMovement():void {
-			_allowMovement = false;
-			
-			updateHolderPosition();
-			
+		public function lockPosition():void {
+			setPosition();
+		}
+		
+		private function setPosition():void {
 			switch(_placement) {
 				case TOP:
-					setStyle("horizontalCenter", 0);
-					setStyle("top", 0);
+					x = _board.width/2 - width/2;
+					y = 0;
 				break;
 				
 				case BOTTOM:
-					setStyle("horizontalCenter", 0);
-					setStyle("bottom", 0);
+					x = _board.width/2 - width/2;
+					y = _board.height - height;
 				break;
 				
 				case LEFT:
-					setStyle("verticalCenter", 0);
-					setStyle("left", 0);	
+					x = 0;
+					y = _board.height/2 - height/2;
 				break;
 				
 				case RIGHT:
-					setStyle("verticalCenter", 0);
-					setStyle("right", 0);
+					x = _board.width - width;
+					y = _board.height/2 - height/2;
 				break;
 			}
-		}
-		
-		public function allowMovement():void {
-			_allowMovement = true;
 			
-			setStyle("horizontalCenter", null);
-			setStyle("verticalCenter", null);
-			setStyle("right", null);
-			setStyle("left", null);	
-			setStyle("bottom", null);
-			setStyle("top", null);
-		}
-		
-		override public function invalidateDisplayList():void {
-			super.invalidateDisplayList();
-			
-			if ( _placementChanged ) {
-				_placementChanged = false;
-				lockMovement();
-			}
+			updateHolderPosition();
 		}
 		
 		private function nextPosition(bp:Number=-1):Number {
@@ -333,24 +253,24 @@ package com.lekha.display
 		
 		private function updateHolderPosition():void {
 			//Logger.log("placement for chair", _placement, player.name);
-			
+			var _board:Board = Board.getInstance();
 			if ( _placement == TOP || _placement == BOTTOM ) {
 				_hand.order = Holder.HORIZONTAL;
 				
-				_hand.x = (Application.application.width/2) - (8*DealManager.cardSpace);
+				_hand.x = (_board.width/2) - (8*DealManager.cardSpace);
 				if ( _placement == TOP ) {
-					_hand.y = height + DealManager.cardSpace;	
+					_hand.y = height - CardImage.HEIGHT/2;
 				} else {
-					_hand.y = (Application.application.height - height) - DealManager.cardSpace - CardImage.HEIGHT;
+					_hand.y = y;
 				}
 			} else {
 				_hand.order = Holder.VERTICAL;		
 				
-				_hand.y = (Application.application.height/2) - (8*DealManager.cardSpace);
+				_hand.y = (_board.height/2) - (8*DealManager.cardSpace);
 				if ( _placement == LEFT ) {
-					_hand.x = width + DealManager.cardSpace + CardImage.HEIGHT;	
+					_hand.x = width - CardImage.WIDTH/2;	
 				} else {
-					_hand.x = x - DealManager.cardSpace;
+					_hand.x = x + CardImage.WIDTH/2;
 				}		
 			}
 		}

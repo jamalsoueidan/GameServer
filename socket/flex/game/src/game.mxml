@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" applicationComplete="complete();" enabled="false">
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" applicationComplete="complete();" enabled="false" backgroundImage="@Embed(source='assets/board.gif')" xmlns:local="*" xmlns:custom="custom.*" xmlns:display="com.lekha.display.*">
+	<mx:Style source="game.css" />
 	<mx:Script>
 		<![CDATA[
 			import com.game.events.StartGameEvent;
@@ -10,15 +11,16 @@
 			import com.lekha.core.*;
 			import com.lekha.display.*;
 			import com.lekha.events.*;
-			import com.lekha.stage.*;
+			import com.lekha.commands.*;
 		
 			import com.firebug.logger.Logger;
 			
 			private var _game:LekhaGame;
 			private var _chat:Chat;
 			private var _board:Board;
-			private var _stage:IStage;
-			
+			private var _chairChild:ChairChild;
+			private var _stage:ICommand;
+			            
 			private function complete():void {	 	
 				_game = new LekhaGame();
 				
@@ -30,6 +32,9 @@
 				
 				_board = Board.getInstance();
 				addChild(_board);
+				
+				_chairChild = ChairChild.getInstance();
+				addChild(_chairChild);
 				
 				_game.addEventListener(JoinRoomEvent.RESPONSE, joinedGame);
 				_game.addEventListener(StartGameEvent.ALL_PLAYERS_JOINED, startGame);
@@ -49,7 +54,7 @@
 				
 				_chat = new Chat();
 				_chat.execute();
-				addChild(_chat);	
+				_board.addChild(_chat);	
 			}
 			
 			private function startGame(evt:StartGameEvent):void {
@@ -65,16 +70,18 @@
 				_stage.execute();
 				
 				
-				_game.addEventListener(ChairEvent.COMPLETE, allHaveTakenChairPosition);
+				_game.addEventListener(TableEvent.COMPLETE, allHaveTakenChairPosition);
 			}
 			
-			private function allHaveTakenChairPosition(evt:ChairEvent):void {
-				_game.removeEventListener(ChairEvent.COMPLETE, allHaveTakenChairPosition);
+			private function allHaveTakenChairPosition(evt:TableEvent):void {
+				_game.removeEventListener(TableEvent.COMPLETE, allHaveTakenChairPosition);
 				
 				_stage.terminate();
 				_stage = null;
 				
-				removeChild(_chat);
+				if ( _board.contains(_chat)) {
+					_board.removeChild(_chat);
+				}
 				_chat.terminate();
 				_chat = null;
 				

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" implements="com.lekha.stage.IStage" width="368" height="52" horizontalCenter="0" verticalCenter="0" creationComplete="creationComplete();">
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" implements="com.lekha.commands.ICommand" width="420" height="108" horizontalCenter="0" verticalCenter="0" creationComplete="creationComplete();">
 	<mx:Script>
 		<![CDATA[
 			import com.game.requests.JoinRoomRequest;

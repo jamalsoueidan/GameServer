@@ -1,0 +1,1 @@
+﻿package {	import mx.flash.UIMovieClip;	import flash.display.MovieClip;	import flash.text.TextField;	import flash.events.Event;		public dynamic class ChairDisplay extends UIMovieClip {		public function ChairDisplay() {			super();			stop();		}	}}

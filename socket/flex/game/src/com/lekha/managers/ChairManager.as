@@ -1,15 +1,14 @@
 package com.lekha.managers
 {
 	import com.firebug.logger.Logger;
+	import com.lekha.commands.DealCards;
+	import com.lekha.display.Board;
 	import com.lekha.display.Chair;
-	import com.lekha.stage.DealCards;
-	
-	import mx.core.Application;
 	
 	public class ChairManager
 	{
 		public static function getPlacement(chair:Chair):String {
-			var middlePoint:Number = Application.application.width/2;
+			var middlePoint:Number = Board.getInstance().width/2;
 			var topCenter:Number = (chair.x + chair.width/2) - middlePoint; 
 			 
 			var placement:String;

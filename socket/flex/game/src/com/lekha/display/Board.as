@@ -23,13 +23,10 @@ package com.lekha.display
 			verticalScrollPolicy = ScrollPolicy.OFF;
 			horizontalScrollPolicy = ScrollPolicy.OFF;
 			
-			addEventListener(ResizeEvent.RESIZE, function():void {
-				percentWidth = 100;
-				percentHeight = 100;
-			});
+			width = 760;
+			height = 570;
+			y = x = 20;
 			
-			percentWidth = 100;
-			percentHeight = 100;
 			
 			name = "board";
 		}

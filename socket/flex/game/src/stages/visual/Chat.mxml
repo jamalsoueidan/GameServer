@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" implements="com.lekha.stage.IStage" width="587" height="366" horizontalCenter="0" verticalCenter="0">
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" implements="com.lekha.commands.ICommand" width="420" height="240" horizontalCenter="0" verticalCenter="0">
 	<mx:Script>
 		<![CDATA[
 			import com.game.events.GameObjectEvent;
@@ -19,9 +19,7 @@
 				_game = LekhaGame.getInstance();
 				_game.addEventListener(PublicMessageEvent.RESPONSE, receivedMessage);
 				_game.addEventListener(PlayerListEvent.RESPONSE, userlistUpdate);
-				
-				_game.addEventListener(ChairEvent.CHOOSEN, chairIsChoosen);
-				_game.addEventListener(ChairEvent.REMOVED, chairIsChoosen);
+				//_game.addEventListener(ChairEvent.READY, chairIsReady);
 				
 				Application.application.addEventListener(KeyboardEvent.KEY_DOWN, keyboardDown);
 			}
@@ -30,8 +28,7 @@
 				_game.removeEventListener(PublicMessageEvent.RESPONSE, receivedMessage);
 				_game.removeEventListener(PlayerListEvent.RESPONSE, userlistUpdate);
 				
-				_game.removeEventListener(ChairEvent.CHOOSEN, chairIsChoosen);
-				_game.removeEventListener(ChairEvent.REMOVED, chairIsChoosen);
+				//_game.removeEventListener(ChairEvent.READY, chairIsReady);
 				
 				_game = null;
 				
@@ -44,18 +41,11 @@
 				}
 			}
 			
-			private function chairIsChoosen(evt:ChairEvent):void {
-				if ( evt.type == ChairEvent.CHOOSEN ) {
-					if ( _game.currentPlayer.id == evt.player.id ) {
-						readyButton.enabled = startGame.visible = true;
-					}
-				} else {
-					if ( _game.currentPlayer.id == evt.player.id ) {
-						startGame.visible = false;
-					}
+			private function chairIsReady(evt:TableEvent):void {
+				if ( evt.player.id == _game.currentPlayer.id ) {
+					parent.removeChild(this);
 				}
 			}
-			
 			private function sendButton(evt:MouseEvent=null):void {
 				if ( text_input.text != "" ) {
 					var msg:PublicMessageRequest = new PublicMessageRequest();
@@ -74,21 +64,21 @@
 			}
 			
 			private function ready():void {
-				var sendObject:GameObjectRequest = new GameObjectRequest(ChairEvent, ChairEvent.READY);
+				var sendObject:GameObjectRequest = new GameObjectRequest(TableEvent, TableEvent.READY);
 				_game.send(sendObject);
 				
-				readyButton.enabled = false;
+				//readyButton.enabled = false;
 			}
 			
 		]]>
 	</mx:Script>
-	<mx:Button x="346" y="10" label="Send" click="sendButton();" fontSize="14"/>
-	<mx:TextInput x="10" y="10" id="text_input" width="328" fontSize="14"/>
-	<mx:TextArea x="10" y="40" width="401" height="174" id="text_area" fontSize="14"/>
-	<mx:List width="158" height="205"  x="419" y="9" id="user_list" labelField="name" fontSize="14"/>
-	<mx:Canvas x="179.5" y="220" height="71" id="startGame" visible="false">
+	<mx:Button x="261" label="Send" click="sendButton();" fontSize="14" top="20"/>
+	<mx:TextInput id="text_input" width="233" fontSize="14" left="20" top="20"/>
+	<mx:TextArea width="233" id="text_area" fontSize="14" left="20" top="55" bottom="30"/>
+	<mx:List width="139" id="user_list" labelField="name" fontSize="14" right="20" bottom="32" height="153" borderThickness="0"/>
+	<!--<mx:Canvas x="179.5" y="220" height="71" id="startGame" visible="false">
 		<mx:Button x="0" y="27" label="START GAME" id="readyButton" click="ready();" fontSize="20" width="228" height="44" visible="true" borderColor="#25FF44" color="#02090A" fillAlphas="[1.0, 1.0]" fillColors="[#0CD71A, #0CD71A]"/>
 	<mx:Label x="16" y="1" text="Click here if you are ready" width="196" fontWeight="normal" fontSize="12" textAlign="center" textDecoration="underline"/>
-	</mx:Canvas>
+	</mx:Canvas>-->
 
 </mx:Canvas>

@@ -3,6 +3,9 @@ package com.lekha.core
 	import com.firebug.logger.Logger;
 	import com.game.core.Game;
 	import com.game.events.JoinRoomEvent;
+	import com.game.events.StartGameEvent;
+	import com.game.requests.GameObjectRequest;
+	import com.lekha.events.TableEvent;
 	
 	import flash.events.Event;
 	
@@ -35,6 +38,7 @@ package com.lekha.core
 			CursorManager.setBusyCursor();
 			addEventListener(Event.CONNECT, connected);
 			addEventListener(JoinRoomEvent.RESPONSE, joinedRoom);
+			
 			instance = this;
 		}
 		

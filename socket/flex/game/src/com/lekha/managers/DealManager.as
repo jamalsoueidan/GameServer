@@ -1,12 +1,12 @@
 package com.lekha.managers
 {
+	import com.lekha.commands.*;
 	import com.lekha.display.*;
 	import com.lekha.engine.Suit;
-	import com.lekha.stage.*;
 	
 	import mx.core.UIComponent;
 	
-	public class DealManager extends Game
+	public class DealManager extends Command
 	{
 		private static var _cardSpace:Number = 16;
 		
@@ -20,21 +20,21 @@ package com.lekha.managers
 			var toY:Number = 0;	
 			
 			if ( chair.placement == Chair.TOP || chair.placement == Chair.BOTTOM) {
-				toX = chair.x - CardImage.WIDTH - _cardSpace;
+				toX = _board.width/2;
 				if ( chair.placement == Chair.TOP ) {
-					toY = _cardSpace;
+					toY = _cardSpace*2 + _myChair.height;
 				} else {
-					toY = (_board.height) - CardImage.HEIGHT - _cardSpace;	
+					toY = (_myChair.y - CardImage.HEIGHT*2) + _cardSpace;
 				}
 			} else {
-				toY = (chair.y - _cardSpace) - CardImage.WIDTH;
+				toY = _board.height/2;
 				toRotation = 90; 
 				if ( chair.placement == Chair.LEFT ) {
-					toX = CardImage.HEIGHT + _cardSpace;
+					toX = _myChair.width*2;
 				} else {
-					toX = (_board.width) - CardImage.HEIGHT - _cardSpace;
+					toX = (_board.width) - CardImage.HEIGHT/2 - _myChair.width;
 				}
-			}
+			} 
 			
 			return {x:toX, y:toY, rotation:toRotation};
 		}

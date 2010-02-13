@@ -1,0 +1,8 @@
+Chat, CountDownWithCommentBox, Login, WaitingForPlayersBox, ExchangeCardsBox {
+	backgroundImage: Embed(source="assets/window.png", scaleGridTop="20", scaleGridBottom="94", scaleGridLeft="20", scaleGridRight="116");
+	backgroundSize: "100%";
+	padding-bottom: 25px;
+	padding-left: 25px;
+	padding-right:25px;
+	padding-top:25px;
+}

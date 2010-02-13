@@ -10,13 +10,11 @@ package com.lekha.display
 	
 	import mx.controls.Image;
 	
-	public class CardImage extends Image
+	public class CardImage extends CardImageSkin
 	{
-		public static const HEIGHT:Number = 97;
-		public static const WIDTH:Number = 73;
+		public static const HEIGHT:Number = 100;
+		public static const WIDTH:Number = 70;
 		
-		[Embed(source="/assets/png_cards/b2fv.png")]
-		private var _hidden:Class;
 		private var _shown:Object;
 		private var _visible:Boolean = true;
 		
@@ -63,15 +61,16 @@ package com.lekha.display
 		private function loadCard():void {
 			//trace("Load", "assets/png_cards/" + _card.toPath() + ".png");
 			
-			_loader = new Loader();
+			source = this[_card.toPath()];
+			/*_loader = new Loader();
 			_loader.contentLoaderInfo.addEventListener(Event.COMPLETE,function(e:Event):void{ 
 				source = _loader.content;
 			});
-			_loader.load(new URLRequest("assets/png_cards/" + _card.toPath() + ".png"));
+			_loader.load(new URLRequest("assets/png_cards/" +  + ".png"));*/
 		}
 		
 		public function hide():void {
-			source = _hidden;
+			source = this["hidden"];
 			_visible = false;
 		}
 		
@@ -108,6 +107,7 @@ package com.lekha.display
 			scaleContent = false;
 			movement = true;
 			clickable = true;
+			mouseChildren = false;
 			hide();
 			
 		}

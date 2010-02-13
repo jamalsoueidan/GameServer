@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" horizontalCenter="-1" verticalCenter="0" backgroundColor="#CBF3FF" width="354.5" height="76">
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" horizontalCenter="0" verticalCenter="0" width="400" verticalScrollPolicy="off" horizontalScrollPolicy="off">
 <mx:Script>
 	<![CDATA[
+		import com.firebug.logger.Logger;
 		private var _text:String;
 		private var _textChanged:Boolean;
 		
@@ -9,6 +10,7 @@
 			_text = value;
 			_textChanged = true;
 			invalidateProperties();	
+			invalidateSize();
 		}
 		
 		override protected function commitProperties():void {
@@ -19,7 +21,25 @@
 				waiting.text = _text;
 			}
 		}
+		
+		override protected function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void {
+			super.updateDisplayList(unscaledWidth, unscaledHeight);
+			
+			// source: http://www.flexer.info/2009/02/06/auto-resizable-text-area-component/
+			 var totalHeight:uint = 10;
+			
+			var noOfLines:int = waiting.mx_internal::getTextField().numLines;
+			for (var i:int = 0; i < noOfLines; i++) {
+				var textLineHeight:Number = waiting.mx_internal::getTextField().getLineMetrics(i).height;
+				totalHeight += textLineHeight;
+            }
+            
+           	height = totalHeight + 50;
+            
+            //Logger.log(_text);
+            //Logger.info(noOfLines, totalHeight, textLineHeight);
+		}
 	]]>
 </mx:Script>
-	<mx:TextArea id="waiting" wordWrap="true" editable="false" fontSize="14" backgroundColor="#CBF3FF" width="334" height="47" fontWeight="bold" textAlign="center"  horizontalCenter="0" verticalCenter="0" selectable="false" themeColor="#CBF3FF" borderColor="#CBF3FF"/>
+	<mx:TextArea id="waiting" horizontalScrollPolicy="off" verticalScrollPolicy="off" wordWrap="true" editable="false" fontSize="13" fontWeight="bold" textAlign="center" selectable="false" left="20" top="20" bottom="30" right="20" borderThickness="0" backgroundAlpha="0.0"/>
 </mx:Canvas>
