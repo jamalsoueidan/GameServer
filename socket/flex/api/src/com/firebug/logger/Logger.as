@@ -2,12 +2,17 @@ package com.firebug.logger
 {
 	import flash.external.ExternalInterface;
 	
+	import mx.controls.Alert;
 	import mx.core.Application;
 	
 	public class Logger
 	{
 		public static function get debug():Boolean {
-			return true;//Application.application.parameters["debug"] as Boolean;
+			if ( Application.application.parameters["debug"] == "true" ) {
+				return true;
+			} else {
+				return false;
+			}
 		}
 		
 		public static function log(... arg:*):void {
