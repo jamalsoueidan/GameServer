@@ -2,25 +2,23 @@ package com.lekha.commands
 {
 	import com.firebug.logger.Logger;
 	import com.game.core.Player;
-	import com.game.requests.GameObjectRequest;
 	import com.greensock.TimelineLite;
+	import com.greensock.TweenAlign;
 	import com.greensock.TweenLite;
-	import com.greensock.TweenMax;
 	import com.lekha.display.CardImage;
 	import com.lekha.display.Chair;
 	import com.lekha.engine.*;
 	import com.lekha.events.PlayEvent;
 	import com.lekha.managers.ChairManager;
-	import com.lekha.managers.DealManager;
+	import com.lekha.requests.PlayRequest;
 	
 	import custom.WaitingForPlayersBox;
 	
 	import flash.events.MouseEvent;
 	import flash.events.TimerEvent;
-	import flash.geom.Point;
 	import flash.utils.Timer;
 	
-	import mx.core.Application;
+	import mx.controls.Alert;
 	
 	public class Play extends Command implements ICommand
 	{
@@ -35,10 +33,13 @@ package com.lekha.commands
 		private var _animationObject:Array = [];
 		private var _winnerChair:Chair;
 		
-		private var _timer:Timer = new Timer(2000, 10000);
+		private var _playersReadyForNewRound:Number = 0;
+		private var _timer:Timer = new Timer(3000, 10000);
 		
 		public function execute():void {
 			_game.addEventListener(PlayEvent.PLAYED_CARD, playedCard);
+			_game.addEventListener(PlayEvent.READY_FOR_NEW_ROUND, readyForNewRound);
+			_game.addEventListener(PlayEvent.READY_FOR_REPLAY, readyForReplay);
 			
 			_waitingForPlayersBox = new WaitingForPlayersBox();
 			
@@ -60,11 +61,37 @@ package com.lekha.commands
 		
 		public function terminate():void {
 			_game.removeEventListener(PlayEvent.PLAYED_CARD, playedCard);
+			_game.removeEventListener(PlayEvent.READY_FOR_NEW_ROUND, readyForNewRound);
+			_game.removeEventListener(PlayEvent.READY_FOR_REPLAY, readyForReplay);
+			
 			_timer.stop();
 			_timer = null;
+			
+			_board.removeAllChildren();
 		}
 		
-		private function checkIfWeAreLastPlayerToPlayCard():void {			
+		private function readyForNewRound(evt:PlayEvent):void {
+			_playersReadyForNewRound++;
+			
+			Logger.log("readyForNewRound", _playersReadyForNewRound);
+			
+			if ( _game.allPlayers.length == _playersReadyForNewRound ) {
+				_game.dispatchEvent(new PlayEvent(PlayEvent.NEW_ROUND));
+			}
+		}
+		
+		private function readyForReplay(evt:PlayEvent):void {
+			_playersReadyForNewRound++;
+			
+			Logger.log("readyForReplay", _playersReadyForNewRound);
+			
+			if ( _game.allPlayers.length == _playersReadyForNewRound ) {
+				turnOnFirstPlayer(_winnerChair);
+			}
+		}
+		
+		private function checkIfWeAreLastPlayerToPlayCard():void {
+			Logger.log("checkIfWeAreLastPlayerToPlayCard", _cardImagePlayed.length);			
 			if ( _cardImagePlayed.length >= 4 ) {
 				// determine winner
 				var lastObject:Object;
@@ -110,19 +137,38 @@ package com.lekha.commands
 		}
 		
 		private function moveCardsToWinner(winner:Object, count:Number):void {
-			_winnerChair = ChairManager.getByPlayerSession(winner.player.id);
-			_winnerChair.statistic.addCount(count);
+			_winnerChair = ChairManager.getByPlayer(winner.player.id);
+			//_winnerChair.statistic.addCount(count);
+			
+			stats.addCount(_winnerChair, count);
+			
+			var tweens:Array = [];
+			var rotation:Number;
+			var x:Number;
+			var y:Number;
 			
 			// please move to the chair who is winning.
 			for each( var object:Object in _cardImagePlayed ) {
-				_animationObject.push(object.cardImage);
+				if ( _winnerChair.placement == Chair.LEFT || _winnerChair.placement == Chair.RIGHT ) {
+					rotation = 90;	
+					y = _winnerChair.y + _winnerChair.height/2;
+					x = 0;
+					if ( _winnerChair.placement == Chair.RIGHT ) x = _board.width;
+				} else {
+					rotation = 0;
+					x = _winnerChair.x + _winnerChair.width/2;
+					y = 0;
+					if ( _winnerChair.placement == Chair.BOTTOM ) y = _board.height;
+				}
+				
+				//Logger.log("Move cards to", _winnerChair.player.name, _winnerChair.placement, x, y);
+				
+				tweens.push(new TweenLite(object.cardImage, .5, {rotation:rotation, x:x, y:y, alpha:0}));
 			}
 			
-			_cardImagePlayed = [];
-			Logger.log("Move cards to", _winnerChair.player.name);
+			_animation = new TimelineLite({tweens:tweens, align:TweenAlign.START, delay:1.5, onComplete:animationComplete});
 			
-			_animation = new TimelineLite({delay:1.5, onComplete:animationComplete});
-			_animation.appendMultiple( TweenMax.allTo(_animationObject, 1.5, {y:_winnerChair.y, x:_winnerChair.x, alpha:0}) );
+			_cardImagePlayed = [];
 		}
 		
 		private function animationComplete():void {
@@ -130,12 +176,9 @@ package com.lekha.commands
 			_animation = null;
 			
 			if ( _winnerChair.hand.isEmpty() ) {
-				Logger.log("new round");
-				for each( var chair:Chair in allChairs ) chair.reset();
-				_game.dispatchEvent(new PlayEvent(PlayEvent.NEW_ROUND));
+				newRound();
 			} else {
-				Logger.log("lets play again!");
-				turnOnFirstPlayer(_winnerChair);
+				_game.send(new PlayRequest(PlayEvent.READY_FOR_REPLAY));
 			}
 			
 			for each( var cardImage:CardImage in _animationObject ) {
@@ -156,17 +199,17 @@ package com.lekha.commands
 			
 			removeWaitingForPlayersBox();
 			
-			//Logger.log(" * Card Played by", evt.from.name, "cards: ", _cardImagePlayed.length);
+			Logger.log("Current player", evt.player.name, "played card", evt.card, "cards played: ", _cardImagePlayed.length);
 			
 			//Logger.log(_cardImagePlayed);
 			
 			var player:Player = evt.player;
 			if ( player.id != _game.currentPlayer.id ) {
-				var chair:Chair = ChairManager.getByPlayerSession(player.id);
+				var chair:Chair = ChairManager.getByPlayer(player.id);
 				
 				//Logger.log("Chair player", chair.player.name, chair.placement);
-				var cardImagePlayed:CardImage = evt.card;
-				var cardString:String = cardImagePlayed.card.toString();
+				var cardImagePlayed:CardImage = evt.cardImage;
+				var cardString:String = evt.card;
 				var cardImageRandom:CardImage = chair.hand.getRandomCard();
 				
 				if ( cardString == "s 12") {
@@ -182,18 +225,14 @@ package com.lekha.commands
 				cardImageRandom.card = cardImagePlayed.card;
 			
 				chair.hand.removeCard(cardImageRandom);
-				var point:Point = getPosition(chair);
-				
+				chair.hand.centerObjects();
+								
 				_cardImagePlayed.push({player:player, cardImage:cardImageRandom});
-				TweenLite.to(cardImageRandom, .5, {x:point.x, y:point.y});
-			
-				cardImageRandom.show();
+				TweenLite.to(cardImageRandom, .5, getPosition(chair));
 				
-				//DealManager.sortCards(chair);
+				cardImageRandom.show();
 			
 				var nextChair:Chair = chair.nextChair();
-				
-				//Logger.log(" * Next player", nextChair.player.name);
 				
 				if ( _cardImagePlayed.length > 0 ) {
 					if ( !_allowSuit ) {
@@ -202,19 +241,43 @@ package com.lekha.commands
 					}
 				}
 				
-				if ( _cardImagePlayed.length <= 3 ) {	
+				if ( _cardImagePlayed.length < 4 ) {
+					Logger.log(" +> Next player", nextChair.player.name);	
 					if ( nextChair.player.id == _game.currentPlayer.id ) {
 						_myTurn = true;
 					}
 				}
 			}
-			
-			checkIfWeAreLastPlayerToPlayCard();
 		}
 		
-		public function newRound(evt:PlayEvent):void {
+		public function newRound():void {
+			Logger.log(" new round");
+			round.newRound();
+			stats.update();
 			
+			for each( var chair:Chair in allChairs ) {
+				chair.reset();
+			}
+			
+			Logger.log(" - reseting chairs");
+			
+			_waitingForPlayersBox = new WaitingForPlayersBox();
+			_waitingForPlayersBox.text = "Wait a moment to start new round";
+			_board.addChild(_waitingForPlayersBox);
+			
+			
+			Logger.log(" - adding wait box");
+			
+			
+			if ( stats.doWeHaveLoser ) {
+				chair = stats.getLoserChair();
+				Alert.show("The loser is " + chair.player.name);
+				
+			} else {
+				_game.send(new PlayRequest(PlayEvent.READY_FOR_NEW_ROUND));
+			}
 		}
+		
 		
 		private function startRound():void {
 			var chair:Chair = ChairManager.getDealerChair();
@@ -231,10 +294,12 @@ package com.lekha.commands
 		}	
 		
 		private function turnOnFirstPlayer(chair:Chair):void {
+			_playersReadyForNewRound = 0;
+			
 			_allowSuit = null;
 			_cardImagePlayed = [];
 			
-			Logger.log("Turn on first player", chair.player.name, "my name is:", _game.currentPlayer.name); 
+			Logger.log("---------------  Turn on first player", chair.player.name, "my name is:", _game.currentPlayer.name); 
 				
 			if ( chair.player.id == _game.currentPlayer.id ) {
 				_ownerPlayerSession = chair.player.id;
@@ -277,14 +342,11 @@ package com.lekha.commands
 			
 			cardImage.lock();
 			
-			var point:Point = getPosition(_myChair);
-			TweenLite.to(cardImage, .5, {x:point.x, y:point.y});
+			_myChair.hand.centerObjects();
 			
-			var request:GameObjectRequest = new GameObjectRequest(PlayEvent, PlayEvent.PLAYED_CARD);	
-			request.addKeyValue("card", cardImage.card.toString());
-			_game.send(request);
+			TweenLite.to(cardImage, .5, getPosition(_myChair));
 			
-			//DealManager.sortCards(_myChair);
+			_game.send(new PlayRequest(PlayEvent.PLAYED_CARD, {card:cardImage.card.toString()}));
 			
 			_myTurn = false;
 		}
@@ -297,23 +359,29 @@ package com.lekha.commands
 			}
 			return false;
 		}
-		private function getPosition(chair:Chair):Point {
-			var point:Point = new Point();
+		
+		private function getPosition(chair:Chair):Object {
+			var object:Object = {scaleX:1, scaleY:1};
 			if ( chair.placement == Chair.BOTTOM ) {
-				point.x = (_board.width/2) - (CardImage.WIDTH/2);
-				point.y = (_board.height/2);
+				object.x = chair.x + chair.width/2;
+				object.y = (_board.height/2) + CardImage.HEIGHT/2 - 25;
+				object.rotation = 10;
 			} else if ( chair.placement == Chair.RIGHT ) {
-				point.x = (_board.width/2) + CardImage.HEIGHT;
-				point.y = (_board.height/2) - (CardImage.WIDTH/2);
+				object.x = (_board.width/2) + CardImage.HEIGHT/2;
+				object.y = chair.y + chair.height/2  - 25;
+				object.rotation = 120;
 			} else if ( chair.placement == Chair.LEFT ) {
-				point.x = (_board.width/2);
-				point.y = (_board.height/2) - (CardImage.WIDTH/2)
+				object.x = (_board.width/2) - CardImage.HEIGHT/2;
+				object.y = chair.y + chair.height/2 - 25;
+				object.rotation = 40;
 			} else {
-				point.x = (_board.width/2) - (CardImage.WIDTH/2);
-				point.y = (_board.height/2) - CardImage.HEIGHT;
+				object.x = chair.x + chair.width/2;
+				object.y = (_board.height/2) - CardImage.HEIGHT/2 - 25;
+				object.rotation = -10;
 			}
 			
-			return point;
+			object.onComplete = checkIfWeAreLastPlayerToPlayCard;
+			return object;
 		}
 		
 	}

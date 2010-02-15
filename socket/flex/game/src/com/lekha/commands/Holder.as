@@ -13,8 +13,8 @@ package com.lekha.commands
 		
 		public var order:String = HORIZONTAL; 
 		
-		private var _list:Object = {}; // all objects
-		private var _indexs:Number = 13;
+		protected var _list:Object = {}; // all objects
+		protected var _indexs:Number = 13;
 		
 		private var _x:Number = 0;
 		private var _y:Number = 0;
@@ -22,7 +22,7 @@ package com.lekha.commands
 		private var _width:Number;
 		private var _height:Number;
 		
-		private var _children:Number = 0;
+		protected var _children:Number = 0;
 		
 		private var _parent:UIComponent; // where the children uicomponent is located
 		
@@ -96,29 +96,10 @@ package com.lekha.commands
 			var cardImage:CardImage = uicomponent as CardImage;
 			for( var i:int=0; i<_indexs; i++) {
 				if ( _list[i] && _list[i].card.toString() == cardImage.card.toString()  ) {
-					//Logger.log("removed uicomponent from holder", _list[i].card.toString());
 					_children--;
 					_list[i] = null;
-					
-					centerObjects();
 				}
 			}
-		}
-		
-		private function centerObjects():void {
-			var foundChildren:Number = Math.ceil(_children/2);
-			var totalChildren:Number = Math.ceil(_indexs/2);
-			
-			var startIndex:Number = totalChildren - foundChildren;
-			var currentIndex:Number = startIndex;
-			for( var i:int = 0;i < _indexs; i++) {
-				if ( _list[i] ) {
-					TweenLite.to(_list[i], 1,  position(currentIndex));
-					currentIndex++
-				}
-			}
-			
-			Logger.log("found", foundChildren, totalChildren, startIndex);
 		}
 		
 		public function removeAtIndex(uicomponent:UIComponent, index:Number):void {
@@ -146,15 +127,15 @@ package com.lekha.commands
 			addChildren(uicomponent, index);
 			var vars:Object = position(index);
 			if ( !_owner ) {
-				vars.scaleX = vars.scaleY = .7
+				vars.scaleX = vars.scaleY = .6
 			} else {
-				vars.scaleX = vars.scaleY = 1.2
+				vars.scaleX = vars.scaleY = 1
 			}
 			
 			TweenLite.to(uicomponent, 1,  vars);
 		}
 		
-		private function position(index:Number):Object {
+		protected function position(index:Number):Object {
 			var xPosition:Number = _x;
 			
 			if ( order == HORIZONTAL ) {
@@ -211,6 +192,10 @@ package com.lekha.commands
 					}  
 				} else if (_list[afterIndex]) {
 					childIndex = _parent.getChildIndex(_list[afterIndex]) - 1;
+					//Logger.log("childIndex", childIndex);
+					if ( childIndex < 0 ) {
+						childIndex = 0;
+					}
 					_parent.addChildAt(uicomponent, childIndex)
 				}
 			}

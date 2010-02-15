@@ -1,8 +1,8 @@
 package com.lekha.commands
 {
 	import com.firebug.logger.Logger;
+	import com.greensock.TweenLite;
 	import com.lekha.display.CardImage;
-	import com.lekha.engine.Suit;
 	
 	public class Hand extends Holder
 	{
@@ -114,7 +114,7 @@ package com.lekha.commands
 				if ( findCardImage.card.toString() != cardImage.card.toString() ) {
 					newCards.push(findCardImage);
 				} else {
-					Logger.log("remove card from hand", cardImage.card.toString());
+					//Logger.log("remove card from hand", cardImage.card.toString());
 				}
 			}
 			remove(cardImage);
@@ -137,6 +137,22 @@ package com.lekha.commands
 		
 		public function get numCards():Number {
 			return _cards.length;
+		}
+		
+		public function centerObjects():void {
+			var foundChildren:Number = Math.ceil(_children/2);
+			var totalChildren:Number = Math.ceil(_indexs/2);
+			
+			var startIndex:Number = totalChildren - foundChildren;
+			var currentIndex:Number = startIndex;
+			for( var i:int = 0;i < _indexs; i++) {
+				if ( _list[i] ) {
+					TweenLite.to(_list[i], 1,  position(currentIndex));
+					currentIndex++
+				}
+			}
+			
+			//Logger.log("found", foundChildren, totalChildren, startIndex);
 		}
 	}
 }

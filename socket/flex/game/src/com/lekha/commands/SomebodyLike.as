@@ -2,6 +2,7 @@ package com.lekha.commands
 {
 	import com.firebug.logger.Logger;
 	import com.game.requests.GameObjectRequest;
+	import com.game.utils.TimerLite;
 	import com.lekha.display.CardImage;
 	import com.lekha.display.Chair;
 	import com.lekha.events.ExchangeCardsEvent;
@@ -12,7 +13,6 @@ package com.lekha.commands
 	import custom.*;
 	
 	import flash.events.MouseEvent;
-	import flash.events.TimerEvent;
 	import flash.geom.Point;
 	import flash.utils.Timer;
 	
@@ -20,6 +20,8 @@ package com.lekha.commands
 
 	public class SomebodyLike extends Command implements ICommand
 	{
+		public static var WAIT_TIME:Number = 8;
+		
 		private var _timer:Timer;
 		
 		private var _exchangeCardsEvent:ExchangeCardsEvent;	
@@ -39,6 +41,8 @@ package com.lekha.commands
 			_waitingForPlayersBox.text = "Waiting on the other players...";
 			
 			_board.addChild(_countDownWithCommentBox);
+			
+			if ( Logger.debug ) WAIT_TIME = 3;
 			
 			somebodyLikes();
 		}
@@ -77,23 +81,13 @@ package com.lekha.commands
 				}
 			}
 			
-			_timer = new Timer(1000, 5);
-			_timer.addEventListener(TimerEvent.TIMER, timerUpdate, false, 0, true);
-			_timer.addEventListener(TimerEvent.TIMER_COMPLETE, timerCompleteChooseQueenOrDiamond, false, 0, true);
-			_timer.start();
-		}
-		
-		private function timerUpdate(evt:TimerEvent):void {
-			_countDownWithCommentBox.timer = (5 - _timer.currentCount).toString() + " sec"; 
-		}
-		
-		private function timerCompleteChooseQueenOrDiamond(evt:TimerEvent):void {			
-			done();
+			round.setTimeLeft(WAIT_TIME);
+			TimerLite.onComplete(done, 1000, WAIT_TIME);
 		}
 		
 		private function chooseQueenOrDiamond(evt:MouseEvent):void {
 			var cardImage:CardImage = evt.target as CardImage
-			var chair:Chair = ChairManager.getByPlayerSession(_game.currentPlayer.id);
+			var chair:Chair = ChairManager.getByPlayer(_game.currentPlayer.id);
 			var cardString:String = cardImage.card.toString();
 			
 			if ( cardString == "d 10" || cardString == "s 12") {
@@ -117,26 +111,14 @@ package com.lekha.commands
 		}
 		
 		private function done():void {
-			if ( _timer ) {			
-				removeTimer();
-				killEvents();
-			
-				_countDownWithCommentBox.visible = false;
-				
-				var sendObject:GameObjectRequest = new GameObjectRequest(SomebodyLikeEvent, SomebodyLikeEvent.IM_READY);
-				_game.send(sendObject);
-				
-				_board.addChild(_waitingForPlayersBox);
-			}
-		}
+			killEvents();
 		
-		private function removeTimer():void {
-			if ( _timer ) {
-				_timer.stop();
-				_timer.removeEventListener(TimerEvent.TIMER, timerUpdate);
-				_timer.removeEventListener(TimerEvent.TIMER_COMPLETE, timerCompleteChooseQueenOrDiamond);
-				_timer = null;
-			}
+			_countDownWithCommentBox.visible = false;
+			
+			var sendObject:GameObjectRequest = new GameObjectRequest(SomebodyLikeEvent, SomebodyLikeEvent.IM_READY);
+			_game.send(sendObject);
+			
+			_board.addChild(_waitingForPlayersBox);
 		}
 		
 		private function killEvents():void {
@@ -150,7 +132,7 @@ package com.lekha.commands
 		private function showCard(evt:SomebodyLikeEvent):void {
 			if ( evt.player.id != _game.currentPlayer.id ) {
 				var OtherPlayerCardImage:CardImage = evt.card;
-				var chair:Chair = ChairManager.getByPlayerSession(evt.player.id);
+				var chair:Chair = ChairManager.getByPlayer(evt.player.id);
 				var cardImage:CardImage = chair.hand.getRandomCard();
 				cardImage.card = OtherPlayerCardImage.card;
 				//var point:Point = getPosition(chair);	

@@ -111,6 +111,8 @@ package com.lekha.commands
 				}
 			}
 			
+			_myChair.hand.owner = true;
+			
 			var positionXY:Object = DealManager.deckPosition(chair);
 			var cardImage:CardImage;
 			
@@ -136,7 +138,7 @@ package com.lekha.commands
 		}
 		
 		private function startAnimation():void {
-			var timer:Timer = new Timer(150, _cardImages.length);
+			var timer:Timer = new Timer(50, _cardImages.length);
 			timer.addEventListener(TimerEvent.TIMER, animationSteps, false,0,true);
 			timer.addEventListener(TimerEvent.TIMER_COMPLETE, animationComplete, false,0,true);
 			timer.start();
@@ -148,6 +150,8 @@ package com.lekha.commands
 			Logger.log("finish animation", _myChair.player.name);
 			
 			_game.send(new GameObjectRequest(DealCardsEvent, DealCardsEvent.IM_DONE)); 
+			
+			for each( var cardImage:CardImage in _myChair.hand.cards ) cardImage.show();
 			
 			TimerLite.onComplete(ImDone, 1000, 1);
 		}
@@ -164,7 +168,7 @@ package com.lekha.commands
 		
 			if ( _chairTurn.player.id == _game.currentPlayer.id) {
 				card.clickable = false;
-				card.show();
+				//card.show();
 			}
 			
 

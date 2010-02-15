@@ -2,6 +2,7 @@ package com.lekha.commands
 {
 	import com.firebug.logger.Logger;
 	import com.game.core.Player;
+	import com.game.utils.TimerLite;
 	import com.greensock.TimelineMax;
 	import com.greensock.TweenLite;
 	import com.lekha.display.CardImage;
@@ -16,11 +17,12 @@ package com.lekha.commands
 	import custom.WaitingForPlayersBox;
 	
 	import flash.events.MouseEvent;
-	import flash.events.TimerEvent;
 	import flash.utils.Timer;
 	
 	public class ExchangeCards extends Command implements ICommand
 	{
+		public static var WAIT_TIME:Number = 10;
+		
 		private var _playersDoneWithAnimation:Number = 0;
 		private var _timer:Timer;
 		private var _cardsChoosen:Array = []; // the cards which will be sent to previous player
@@ -44,7 +46,7 @@ package com.lekha.commands
 		public function execute():void {
 			_game.addEventListener(ExchangeCardsEvent.ALLOW_SELECT_CARDS, selectCards);
 			_game.addEventListener(ExchangeCardsEvent.RECEIVE_CARDS, receivedCards);
-			//_game.addEventListener(ExchangeCardsEvent.IM_READY, imReady);
+			_game.addEventListener(ExchangeCardsEvent.IM_READY, imReady);
 			_game.addEventListener(ExchangeCardsEvent.SENT_MY_CARDS, sentCards);
 
 			_exchangeCardsBox = new ExchangeCardsBox();
@@ -55,13 +57,15 @@ package com.lekha.commands
 			
 			_waitingForPlayers = new WaitingForPlayersBox();
 
+			if ( Logger.debug ) WAIT_TIME = 3;
+			
 			playerNextToDealerAllowToChooseExchangeCards();
 		}
 		
 		public function terminate():void {
 			_game.removeEventListener(ExchangeCardsEvent.ALLOW_SELECT_CARDS, selectCards);
 			_game.removeEventListener(ExchangeCardsEvent.RECEIVE_CARDS, receivedCards);
-			//_game.removeEventListener(ExchangeCardsEvent.IM_READY, imReady);
+			_game.removeEventListener(ExchangeCardsEvent.IM_READY, imReady);
 			_game.removeEventListener(ExchangeCardsEvent.SENT_MY_CARDS, sentCards);
 			
 			if ( _exchangeCardsBox ) {
@@ -84,13 +88,13 @@ package com.lekha.commands
 				}
 			}
 			
-			DealManager.sortCards(_myChair);
+			//DealManager.sortCards(_myChair);
 		}
 		
 		private function sentCards(evt:ExchangeCardsEvent):void {			
 			// get chair and cards from the other player we are exchanging cards with.
 			var player:Player = evt.player;
-			var playerChair:Chair = ChairManager.getByPlayerSession(player.id);
+			var playerChair:Chair = ChairManager.getByPlayer(player.id);
 			var playerHand:Hand = playerChair.hand;
 			var playerCards:Array = playerHand.cards;
 			
@@ -157,29 +161,47 @@ package com.lekha.commands
 					object.chair.hand.removeCard(card);
 				}
 			}
-			var chair:Chair;
-			var cards:Array;			
-			var beforeChair:Chair;
+			
+			TimerLite.onRepeat(play, 500, 4, {parameter: "self"});
+		}
+		
+		private function play(timer:Timer):void {
+			var object:Object = _cardsOnTableOldPositions[(timer.currentCount-1)];
+			var chair:Chair = object.chair;
+			var cards:Array = object.cards;				
+			var beforeChair:Chair = chair.beforeChair();
 
-			for each( object in _cardsOnTableOldPositions ) {
-				chair = object.chair;
-				cards = object.cards;				
-				beforeChair = chair.beforeChair();
-
-				for(var j:int=0; j<cards.length; j++) {				
-					if ( beforeChair.player.id == _myChair.player.id ) {
-						cards[j].card = _recievedCards.cards[j];
-						cards[j].show();
-					} else {
-						cards[j].hide();
-						cards[j].lock();
-					}
-						
-					beforeChair.hand.addCard(cards[j]);
+			for(var j:int=0; j<cards.length; j++) {				
+				if ( beforeChair.player.id == _myChair.player.id ) {
+					cards[j].card = _recievedCards.cards[j];
+					cards[j].show();
+				} else {
+					cards[j].hide();
+					cards[j].lock();
 				}
+					
+				beforeChair.hand.addCard(cards[j]);
 			}
 			
-			_game.dispatchEvent(new ExchangeCardsEvent(ExchangeCardsEvent.COMPLETE));
+			areWeDone(timer);
+		}
+		
+		private function areWeDone(timer:Timer):void {
+			if ( timer.currentCount == timer.repeatCount ) {
+				_waitingForPlayers.text = "Waiting a sec...";
+				_waitingForPlayers.visible = true;
+				_board.addChild(_waitingForPlayers);
+				DealManager.sortCards(_myChair);
+				_game.send(new ExchangeCardsRequest(ExchangeCardsEvent.IM_READY));
+			}
+		}
+		private function imReady(evt:ExchangeCardsEvent):void {
+			_playersDoneWithAnimation++;
+			Logger.log(evt.player.name, " is done with exchangng cards", _playersDoneWithAnimation, _game.allPlayers.length);
+			
+			if ( _playersDoneWithAnimation == _game.allPlayers.length ) {
+				_game.dispatchEvent(new ExchangeCardsEvent(ExchangeCardsEvent.COMPLETE));
+			}
 		}
 		
 		private function receivedCards(evt:ExchangeCardsEvent):void {				
@@ -188,13 +210,16 @@ package com.lekha.commands
 		
 		// add exchangecardsbox to the player next to dealer to choose how many cards to exchange.
 		private function playerNextToDealerAllowToChooseExchangeCards():void {
-			var chair:Chair = ChairManager.getByPlayerSession(DealCards.dealerSession).nextChair();
+			var chair:Chair = ChairManager.getByPlayer(DealCards.dealerSession).nextChair();
 			if ( _game.currentPlayer.id == chair.player.id) {
 				_board.addChild(_exchangeCardsBox);
 			} else {
 				_waitingForPlayers.text = "Waiting on " + chair.player.name + " to determine how many cards to exchange!";
 				_board.addChild(_waitingForPlayers);
 			}
+			
+			round.setTimeLeft(WAIT_TIME);
+			TimerLite.onComplete(playerMadeChoice, 1000, WAIT_TIME);
 		}
 		
 		// add events to cards
@@ -221,9 +246,11 @@ package com.lekha.commands
 				cardImage.selected = false;
 				cardImage.movement = true;
 			} else {
-				addChoosenCard(cardImage);
-				cardImage.selected = true;
-				cardImage.movement = false;
+				if ( _cardsChoosen.length < _totalCardsToChoose ) {
+					addChoosenCard(cardImage);
+					cardImage.selected = true;
+					cardImage.movement = false;
+				}
 			}
 			
 			leftToChoose();
@@ -260,17 +287,16 @@ package com.lekha.commands
 			return found;
 		}
 		
-		private function playerMadeChoice(evt:ExchangeCardsEvent):void {
+		private function playerMadeChoice(evt:ExchangeCardsEvent=null):void {
+			round.resetTimeLeft();
 			
 			var sendObject:ExchangeCardsRequest;
-			if ( evt.total > 0 ) {
+			if ( evt && evt.total > 0 ) {
 				sendObject = new ExchangeCardsRequest(ExchangeCardsEvent.ALLOW_SELECT_CARDS);
 				sendObject.addKeyValue("total", evt.total);
 			} else {
 				sendObject = new ExchangeCardsRequest(ExchangeCardsEvent.COMPLETE);
 			}
-			
-			Logger.log("player made choice", evt.total);
 			
 			_game.send(sendObject);
 			
@@ -289,35 +315,19 @@ package com.lekha.commands
 			_countDownWithCommentBox.comment = 	"Please choose " + evt.total.toString() + " cards";
 			pleaseChooseExchangingCards();
 			
-			startTimer();
+			round.setTimeLeft(5*_totalCardsToChoose);
+			TimerLite.onComplete(chooseRancomdCard, 1000, 5*_totalCardsToChoose);
 		}
 		
-		private function startTimer():void {
-			var sec:Number = _totalCardsToChoose*5;
-			if ( _totalCardsToChoose == 1 ) {
-				// if only one card allow 10 sec to choose
-				sec = _totalCardsToChoose*10;
-			}
-			_timer = new Timer(1000, sec);
-			
-			// write out how many sec back to choose cards
-			_timer.addEventListener(TimerEvent.TIMER, function():void {
-				_countDownWithCommentBox.timer = (sec-_timer.currentCount).toString();
-			}, false,0,true);
-			
-			// timer is finished, choose automatic cards.
-			_timer.addEventListener(TimerEvent.TIMER_COMPLETE, function():void {
-				if ( _cardsChoosen.length != _totalCardsToChoose ) {
-					// choose cards automatic
-					while(_totalCardsToChoose>_cardsChoosen.length) {
-						addChoosenCard(_myChair.hand.getRandomCard());
-					}
-					
-					playerIsFinished();
+		private function chooseRancomdCard():void {
+			if ( _cardsChoosen.length != _totalCardsToChoose ) {
+				// choose cards automatic
+				while(_totalCardsToChoose>_cardsChoosen.length) {
+					addChoosenCard(_myChair.hand.getRandomCard());
 				}
-			}, false,0,true);
-			
-			_timer.start();
+				
+				playerIsFinished();
+			}
 		}
 		
 		private function leftToChoose():void {

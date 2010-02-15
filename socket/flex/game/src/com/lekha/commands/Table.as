@@ -1,4 +1,3 @@
-
 package com.lekha.commands
 {
 	/**
@@ -7,6 +6,7 @@ package com.lekha.commands
   	* @author "Jamal Soueidan"
   	*/
   	
+	import com.firebug.logger.Logger;
 	import com.game.requests.*;
 	import com.game.utils.TimerLite;
 	import com.greensock.TimelineLite;
@@ -23,7 +23,6 @@ package com.lekha.commands
 	import flash.events.MouseEvent;
 	
 	import mx.controls.Alert;
-	import mx.core.Application;
 
 	public class Table extends Command implements ICommand
 	{
@@ -45,7 +44,7 @@ package com.lekha.commands
 			
 			createChairInstancesAndAddEvent();
 			
-			TimerLite.onComplete(autoChair, 1500, 1);
+			TimerLite.onComplete(autoChair, 1000, 1);
 		}
 		
 		public function terminate():void {
@@ -66,8 +65,7 @@ package com.lekha.commands
 		
 		
 		private function autoChair():void {
-			var autoChair:Boolean = Application.application.parameters["auto_chair"];
-			if ( autoChair ) {
+			if ( Logger.debug ) {
 				_game.send(new TableRequest(TableEvent.CHOOSEN, {position: _game.currentRoom.joinedPlayers}));
 			}	
 		}
@@ -119,7 +117,6 @@ package com.lekha.commands
 			
 			if ( evt.player.id == _game.currentPlayer.id ) {
 				_myChair = chair;
-				_myChair.hand.owner = true;
 			}
 			
 			var playerReady:Number = howManyPlayersIsReady();
@@ -134,7 +131,7 @@ package com.lekha.commands
 			_board.removeAllChildren();
 				
 			_waiting = new WaitingForPlayersBox();
-			_waiting.text = "Waiting a sec...";
+			_waiting.text = "Wait a sec...";
 			_board.addChild(_waiting);
 		}
 		

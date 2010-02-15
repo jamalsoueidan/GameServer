@@ -12,8 +12,6 @@ package com.lekha.commands
 	import com.lekha.managers.*;
 	import com.lekha.requests.FindDealerRequest;
 	
-	import flash.utils.Timer;
-	
 	import mx.controls.Alert;
 	
 	public class FindDealer extends Command implements ICommand
@@ -89,12 +87,24 @@ package com.lekha.commands
 				_allCardsOnTable.push(cardImage);
 				_board.addChild(cardImage);	
 			}
+			
+			TimerLite.onComplete(autoChooseCard, 1000, 1);
+		}
 		
+		private function autoChooseCard():void {
+			if ( Logger.debug ) {
+				var card:CardImage = _allCardsOnTable[Math.ceil(Math.random()*_allCardsOnTable.length-1)];
+				if ( card ) {
+					var event:CardEvent = new CardEvent(CardEvent.VISIBLE)
+					event.cardImage = card;
+					card.dispatchEvent(event);
+				}
+			}
 		}
 			
 		private function showWhichCardPlayerHasChoosen(evt:FindDealerEvent):void {
 			
-			var chair:Chair = ChairManager.getByPlayerSession(evt.player.id);
+			var chair:Chair = ChairManager.getByPlayer(evt.player.id);
 			var cardImage:CardImage = findCardInHolder(evt.cardString);
 			if ( !cardImage ) return;
 			
@@ -220,6 +230,8 @@ package com.lekha.commands
 			if ( !_game.isOwner ) {
 				return;
 			}
+			
+			Logger.log("create deck as owner of thie game");
 			
 			_deck = new LekhaDeck();
 			_deck.shuffle();
