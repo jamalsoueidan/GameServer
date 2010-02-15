@@ -29,6 +29,8 @@ package com.lekha.display
         protected var s11:Class;
 		[Embed(source="/assets/cards.swf", symbol="s12")]
         protected var s12:Class;
+        [Embed(source="/assets/cards.swf", symbol="s12_liked")]
+        protected var s12liked:Class;
         [Embed(source="/assets/cards.swf", symbol="s13")]
         protected var s13:Class;
         [Embed(source="/assets/cards.swf", symbol="s14")]
@@ -106,6 +108,8 @@ package com.lekha.display
         protected var d9:Class;
 		[Embed(source="/assets/cards.swf", symbol="d10")]
         protected var d10:Class;
+        [Embed(source="/assets/cards.swf", symbol="d10_liked")]
+        protected var d10liked:Class;
         [Embed(source="/assets/cards.swf", symbol="d11")]
         protected var d11:Class;
 		[Embed(source="/assets/cards.swf", symbol="d12")]

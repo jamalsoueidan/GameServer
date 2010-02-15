@@ -45,12 +45,12 @@ package com.lekha.display
 			var count:Number = 0;
 			for each( var placement:String in Chair.PLACEMENTS ) {
 				var extract:Array = getNumbers(placement);
-				if ( extract[1] > 0 ) {
+				if ( extract[1] > count ) {
 					count = extract[1];
 				}
 			}
-			
-			if ( count >= 10 ) {
+
+			if ( count >= 151 ) {
 				return true;
 			} else {
 				return false;
@@ -63,7 +63,7 @@ package com.lekha.display
 			for each( var placement:String in Chair.PLACEMENTS ) {
 				var textField:TextField = this["chair_" + placement];
 				var extract:Array = getNumbers(placement);
-				if ( extract[1] > 0 ) {
+				if ( extract[1] > count ) {
 					count = extract[1];
 					chairPlacement = placement;
 				}

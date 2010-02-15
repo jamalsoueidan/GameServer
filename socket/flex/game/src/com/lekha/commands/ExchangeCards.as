@@ -57,7 +57,7 @@ package com.lekha.commands
 			
 			_waitingForPlayers = new WaitingForPlayersBox();
 
-			if ( Logger.debug ) WAIT_TIME = 3;
+			if ( Logger.debug ) WAIT_TIME = 5;
 			
 			playerNextToDealerAllowToChooseExchangeCards();
 		}

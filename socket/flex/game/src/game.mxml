@@ -3,6 +3,7 @@
 	<mx:Style source="game.css" />
 	<mx:Script>
 		<![CDATA[
+			import mx.controls.Alert;
 			import com.game.events.StartGameEvent;
 			import com.game.events.PlayerListEvent;
 			import com.game.events.JoinRoomEvent;
@@ -24,7 +25,8 @@
 			private var _chairChild:ChairChild;
 			private var _stage:ICommand;
 			            
-			private function complete():void {	 	
+			private function complete():void {	
+				
 				_game = new LekhaGame();
 				
 				Logger.info("1. start with login page to determine the login user");

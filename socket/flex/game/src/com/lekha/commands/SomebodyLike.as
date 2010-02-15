@@ -42,7 +42,7 @@ package com.lekha.commands
 			
 			_board.addChild(_countDownWithCommentBox);
 			
-			if ( Logger.debug ) WAIT_TIME = 3;
+			if ( Logger.debug ) WAIT_TIME = 5;
 			
 			somebodyLikes();
 		}
@@ -91,18 +91,14 @@ package com.lekha.commands
 			var cardString:String = cardImage.card.toString();
 			
 			if ( cardString == "d 10" || cardString == "s 12") {
-				cardImage.movement = false; 
-				cardImage.liked = true;
+				if ( !cardImage.liked ) {
+					cardImage.movement = false; 
+					cardImage.liked = true;
 				
-				/*var point:Point = getPosition(_myChair);
-				cardImage.x = point.x;
-				cardImage.y = point.y;*/
-				
-				DealManager.sortCards(chair);
-				
-				var sendObject:GameObjectRequest = new GameObjectRequest(SomebodyLikeEvent, SomebodyLikeEvent.SHOW_CARD);
-				sendObject.addKeyValue("card", cardString);
-				_game.send(sendObject);
+					var sendObject:GameObjectRequest = new GameObjectRequest(SomebodyLikeEvent, SomebodyLikeEvent.SHOW_CARD);
+					sendObject.addKeyValue("card", cardString);
+					_game.send(sendObject);
+				}
 			} 
 		}
 		
@@ -134,41 +130,10 @@ package com.lekha.commands
 				var OtherPlayerCardImage:CardImage = evt.card;
 				var chair:Chair = ChairManager.getByPlayer(evt.player.id);
 				var cardImage:CardImage = chair.hand.getRandomCard();
-				cardImage.card = OtherPlayerCardImage.card;
-				//var point:Point = getPosition(chair);	
+				cardImage.card = OtherPlayerCardImage.card;	
 				cardImage.liked = true;
-				
-				if ( cardImage.card.toString() == "d 10" ) chair.hand.likedDiamond = true;
-				if ( cardImage.card.toString() == "s 12" ) chair.hand.likedQueen = true;
-				
-				/*cardImage.x = point.x;
-				cardImage.y = point.y;*/
 				cardImage.show();
-				DealManager.sortCards(chair);
 			}
-		}
-		
-		private function getPosition(chair:Chair):Point {
-			var point:Point = new Point();
-			if ( chair.placement == Chair.BOTTOM ) {
-				Logger.log("bottom");
-				point.x = chair.x + chair.width + DealManager.cardSpace;
-				point.y = _board.height - CardImage.HEIGHT - DealManager.cardSpace - 7;
-			} else if ( chair.placement == Chair.RIGHT ) {
-				Logger.log("right");
-				point.x = _board.width - DealManager.cardSpace;
-				point.y = chair.y - chair.height - DealManager.cardSpace - 7;
-			} else if ( chair.placement == Chair.LEFT ) {
-				Logger.log("left");
-				point.x = CardImage.HEIGHT + DealManager.cardSpace;
-				point.y = chair.y + chair.height + DealManager.cardSpace;
-			} else {
-				Logger.log("top");
-				point.x = chair.x - DealManager.cardSpace - CardImage.WIDTH;
-				point.y = DealManager.cardSpace;
-			}
-			
-			return point;
 		}
 	}
 }

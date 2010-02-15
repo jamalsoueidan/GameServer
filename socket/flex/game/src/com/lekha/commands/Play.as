@@ -212,16 +212,16 @@ package com.lekha.commands
 				//Logger.log("Chair player", chair.player.name, chair.placement);
 				var cardImagePlayed:CardImage = evt.cardImage;
 				var cardString:String = evt.card;
-				var cardImageRandom:CardImage = chair.hand.getRandomCard();
+				var cardImageRandom:CardImage;
 				
 				if ( cardString == "s 12") {
-					if ( chair.hand.likedQueen ) {
-						cardImageRandom = chair.hand.getQueen();
-					}	
+					cardImageRandom = chair.hand.getQueen();
 				} else if ( cardString == "d 10" ) {	
-					if ( chair.hand.likedDiamond ) {
-						cardImageRandom = chair.hand.getDiamond();
-					}
+					cardImageRandom = chair.hand.getDiamond();
+				}
+				
+				if ( cardImageRandom == null ) {
+					cardImageRandom = chair.hand.getRandomCard();
 				}
 				
 				cardImageRandom.card = cardImagePlayed.card;
@@ -263,21 +263,22 @@ package com.lekha.commands
 			
 			Logger.log(" - reseting chairs");
 			
-			_waitingForPlayersBox = new WaitingForPlayersBox();
-			_waitingForPlayersBox.text = "Wait a moment to start new round";
-			_board.addChild(_waitingForPlayersBox);
-			
 			
 			Logger.log(" - adding wait box");
 			
+			_waitingForPlayersBox = new WaitingForPlayersBox();
 			
 			if ( stats.doWeHaveLoser ) {
 				chair = stats.getLoserChair();
-				Alert.show("The loser is " + chair.player.name);
+				_waitingForPlayersBox.text = "The loser is " + chair.player.name;
 				
 			} else {
+				_waitingForPlayersBox.text = "Wait a moment to start new round";
+				
 				_game.send(new PlayRequest(PlayEvent.READY_FOR_NEW_ROUND));
 			}
+			
+			_board.addChild(_waitingForPlayersBox);
 		}
 		
 		

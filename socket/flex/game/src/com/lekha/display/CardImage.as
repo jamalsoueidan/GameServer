@@ -31,6 +31,12 @@ package com.lekha.display
 		}
 		
 		public function set liked(value:Boolean):void {
+			if ( value ) {
+				source = this[_card.toPath() + "liked"];
+			} else {
+				source = this[_card.toPath()];	
+			}
+			
 			_liked = value;
 		}
 		

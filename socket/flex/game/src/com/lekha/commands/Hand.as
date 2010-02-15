@@ -28,7 +28,12 @@ package com.lekha.commands
 					break;
 				}
 			}
-			return findCard;
+			
+			if ( findCard.card.toString() != "s 12" ) {
+				return null;
+			} else {
+				return findCard;
+			}
 		}
 		
 		public function set likedDiamond(value:Boolean):void {
@@ -45,7 +50,12 @@ package com.lekha.commands
 					break;
 				}
 			}
-			return findCard;
+			
+			if ( findCard.card.toString() != "d 10" ) {
+				return null;
+			} else {
+				return findCard;
+			}
 		}
 		
 		public function Hand() {
