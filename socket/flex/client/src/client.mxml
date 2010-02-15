@@ -54,13 +54,13 @@
 				msg.setFocus();
 				_game.send(message);
 				
-				var gameObjectRequest:GameObjectRequest = new GameObjectRequest(CustomEvent, CustomEvent.RESPONSE);
+				/*var gameObjectRequest:GameObjectRequest = new GameObjectRequest(CustomEvent, CustomEvent.RESPONSE);
 				gameObjectRequest.addKeyValue("gameObjectRequest", "gameObjectRequest");
 				_game.send(gameObjectRequest);
 				
 				var customRequest:CustomRequest = new CustomRequest();
 				customRequest.addKeyValue("customRequest", "customRequest");
-				_game.send(customRequest);
+				_game.send(customRequest);*/
 			}
 			
 			private function customEvent(evt:CustomEvent):void {

@@ -4,8 +4,8 @@ class JoinRoomRequest < Request
   
   def execute
     p "Executing JoinRoomRequest"
+    current_user = get_current_user(@object["name"])
     
-    current_user = User.find_by_name(@object["name"])
     if current_user.nil?
       p "Player is unknown trying to login"
       return
@@ -38,5 +38,19 @@ class JoinRoomRequest < Request
     instance = PlayerListRequest.new
     instance.connection = @connection
     instance.execute
+  end
+  
+  def get_current_user(name)
+    current_user = nil
+    if name == "debug"
+      User.find(:all, :include => :player).each do |user|
+        if user.player.nil? && current_user.nil?
+          current_user = user
+        end
+      end
+    else
+      current_user = User.find_by_name(@object["name"])
+    end 
+    return current_user
   end
 end
