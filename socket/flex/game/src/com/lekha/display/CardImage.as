@@ -59,14 +59,7 @@ package com.lekha.display
 		}
 		
 		private function loadCard():void {
-			//trace("Load", "assets/png_cards/" + _card.toPath() + ".png");
-			
 			source = this[_card.toPath()];
-			/*_loader = new Loader();
-			_loader.contentLoaderInfo.addEventListener(Event.COMPLETE,function(e:Event):void{ 
-				source = _loader.content;
-			});
-			_loader.load(new URLRequest("assets/png_cards/" +  + ".png"));*/
 		}
 		
 		public function hide():void {

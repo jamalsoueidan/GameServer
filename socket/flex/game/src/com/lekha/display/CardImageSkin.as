@@ -4,6 +4,9 @@ package com.lekha.display
 	
 	public class CardImageSkin extends Image
 	{
+       	/*[Embed("assets/sounds/card_sound_6.wav")]
+        private var ding_mp3:Class;*/
+        
 		[Embed(source="/assets/cards.swf", symbol="s2")]
         protected var s2:Class;
         [Embed(source="/assets/cards.swf", symbol="s3")]

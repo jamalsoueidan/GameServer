@@ -23,8 +23,9 @@ package com.lekha.display
 			verticalScrollPolicy = ScrollPolicy.OFF;
 			horizontalScrollPolicy = ScrollPolicy.OFF;
 			
-			width = 760;
-			height = 570;
+			percentWidth = 95;
+			percentHeight = 95;
+			
 			y = x = 20;
 			
 			

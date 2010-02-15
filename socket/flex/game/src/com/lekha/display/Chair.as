@@ -1,14 +1,12 @@
 package com.lekha.display
 {
 	import com.game.core.Player;
-	import com.game.requests.GameObjectRequest;
 	import com.lekha.commands.*;
 	import com.lekha.core.*;
 	import com.lekha.events.*;
 	import com.lekha.managers.*;
 	
 	import flash.events.Event;
-	import flash.events.MouseEvent;
 	import flash.text.TextField;
 	
 	import mx.controls.*;
@@ -34,9 +32,9 @@ package com.lekha.display
 		private var _player:Player;
 		
 		private var _hand:Hand;
-		private var _statistic:Statistic;
 		
 		private var _allowMovement:Boolean;
+		private var _creationComplete:Boolean;
 		
 		private static var _chairs:Array = [];
 		
@@ -47,10 +45,6 @@ package com.lekha.display
 		
 		public static function getAllChairs():Array {
 			return _chairs;
-		}
-			
-		public function get statistic():Statistic {
-			return _statistic;
 		}
 		
 		public function Chair() {
@@ -63,21 +57,27 @@ package com.lekha.display
 			_board = Board.getInstance();
 					
 			_game = LekhaGame.getInstance();
-			_hand = new Hand();
-			_hand.parent = Board.getInstance();
+			
+			resetHand();
 			
 			addEventListener(FlexEvent.CREATION_COMPLETE, creationComplete);
 			
 			_chairs.push(this);
 			
 			_position = _chairs.length;
+		}
+		
+		private function resetHand():void {
+			_hand = new Hand();
+			_hand.parent = Board.getInstance();
 			
-			_statistic = new Statistic();
-			_statistic.addEventListener(Event.CHANGE, statisticChanged);
+			if ( _creationComplete ) {
+				updateHolderPosition();
+			}
 		}
 		
 		public function reset():void {
-			_hand = new Hand();
+			resetHand();
 		}
 		
 		private function statisticChanged(evt:Event):void {
@@ -92,7 +92,9 @@ package com.lekha.display
 			return _position;
 		}
 		
-		private function creationComplete(evt:FlexEvent):void {			
+		private function creationComplete(evt:FlexEvent):void {		
+			_creationComplete = true;
+				
 			this["green"].visible = false;
 			this["yellow"].visible = false;
 			
