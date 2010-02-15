@@ -46,17 +46,19 @@ package com.lekha.commands
 			addEventsOnCards();
 			startRound();
 			
-			_timer.addEventListener(TimerEvent.TIMER, function():void {
-				var cardImage:CardImage;
-				if ( _allowSuit ) {
-					cardImage = _myChair.hand.searchCard(_allowSuit);
-				} else {
-					cardImage = _myChair.hand.getRandomCard();
-				}
+			if ( Logger.debug ) {
+				_timer.addEventListener(TimerEvent.TIMER, function():void {
+					var cardImage:CardImage;
+					if ( _allowSuit ) {
+						cardImage = _myChair.hand.searchCard(_allowSuit);
+					} else {
+						cardImage = _myChair.hand.getRandomCard();
+					}
 				
-				sendCard(cardImage);
-			});
-			_timer.start(); 
+					sendCard(cardImage);
+				});
+				_timer.start(); 
+			}
 		}
 		
 		public function terminate():void {
