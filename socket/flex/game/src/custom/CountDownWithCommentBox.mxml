@@ -37,7 +37,6 @@
 				
 				if ( _timerChanged ) {
 					_timerChanged = false;
-					private_timer_text.text = _timerText;
 				}
 				
 				if ( _commentChanged ) {
@@ -59,6 +58,5 @@
 	</mx:Script>
 	<mx:Label id="private_comment_text" x="20.25" width="314" height="32" textAlign="center" fontWeight="bold" fontSize="20" top="20"/>
 	<mx:Label id="private_error_text" x="20.25" y="49" width="314" height="21" textAlign="center" fontWeight="bold" fontSize="14" color="#FC1F14"/>
-	<mx:Label id="private_timer_text" y="70" width="60" height="24" textAlign="center" fontWeight="bold" fontSize="16" text="" right="20"/>
 	<mx:Button x="131.25" label="I'm Ready!" width="92" height="25" click="imReady();" id="imReadyButton" bottom="25"/>
 </mx:Canvas>

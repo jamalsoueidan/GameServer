@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" applicationComplete="complete();" enabled="false" backgroundImage="@Embed(source='assets/board.gif')" xmlns:local="*" xmlns:custom="custom.*" xmlns:display="com.lekha.display.*">
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="800" height="600" applicationComplete="complete();" enabled="false" backgroundImage="@Embed(source='assets/board.gif')" xmlns:local="*" xmlns:custom="custom.*" xmlns:display="com.lekha.display.*">
 	<mx:Style source="game.css" />
 	<mx:Script>
 		<![CDATA[
@@ -16,6 +16,9 @@
 			import com.firebug.logger.Logger;
 			
 			private var _game:LekhaGame;
+			private var _stats:StatsDisplay;
+			private var _round:RoundDisplay;
+			
 			private var _chat:Chat;
 			private var _board:Board;
 			private var _chairChild:ChairChild;
@@ -93,6 +96,16 @@
 				
 				_stage = new FindDealer();
 				_stage.execute();
+				
+				_stats = StatsDisplay.getInstance();
+				_stats.y = 513;
+				_stats.x = width - 255;
+				addChild(_stats);
+				
+				_round = RoundDisplay.getInstance();
+				_round.y = 513;
+				_round.x = 5;
+				addChild(_round);
 				
 				_game.addEventListener(FindDealerEvent.COMPLETE, dealerFound);
 			}
@@ -178,6 +191,10 @@
 			private function newRound(evt:PlayEvent):void {
 				_game.removeEventListener(PlayEvent.NEW_ROUND, newRound);
 				_game.removeEventListener(PlayEvent.COMPLETE, gameOver);
+				
+				// is done in the upper method, so dont remove comment code.
+				// _stage.terminate();
+				// _stage = null;
 				
 				dealerFound();
 			}

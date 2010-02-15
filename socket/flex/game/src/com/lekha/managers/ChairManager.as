@@ -41,11 +41,11 @@ package com.lekha.managers
 			return  chair;
 		}
 		
-		public static function getByPlayerSession(session:Number):Chair {
-			return getByPosition(getChairPositionByPlayerSession(session));
+		public static function getByPlayer(id:Number):Chair {
+			return getByPosition(getChairPositionByPlayer(id));
 		}
 		
-		public static function getChairPositionByPlayerSession(id:Number):Number {
+		public static function getChairPositionByPlayer(id:Number):Number {
 			
 			for each( var chair:Chair in Chair.getAllChairs() ) {
 				if ( chair.player.id == id ) {
@@ -57,7 +57,7 @@ package com.lekha.managers
 		}
 		
 		public static function getDealerChair():Chair {
-			return getByPlayerSession(DealCards.dealerSession);
+			return getByPlayer(DealCards.dealerSession);
 		}
 	}
 }

@@ -2,6 +2,7 @@
 <mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" implements="com.lekha.commands.ICommand" width="420" height="108" horizontalCenter="0" verticalCenter="0" creationComplete="creationComplete();">
 	<mx:Script>
 		<![CDATA[
+			import com.firebug.logger.Logger;
 			import com.game.requests.JoinRoomRequest;
 			import com.lekha.core.LekhaGame;
 			import mx.utils.ObjectUtil;
@@ -20,13 +21,9 @@
 			}
 			
 			private function connected(evt:Event):void {
-				var domain:String = ExternalInterface.call('function () { return window.location.href; }');
-				if ( domain.lastIndexOf("=") != -1 ) {
-					var name:String = domain.substr(domain.lastIndexOf("=")+1);
-					if ( name != "" ) {
-						username.text = name;
-						joinGame();
-					}
+				if ( Logger.debug ) {
+					username.text = "debug";
+					joinGame();
 				}
 			}
 			
