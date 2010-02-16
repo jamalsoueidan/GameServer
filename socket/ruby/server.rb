@@ -10,42 +10,54 @@ Room.find(:all).each do |room|
 end
 
 module SocketServer
-  attr_accessor :player
+  attr_accessor :client
   
-  def self.players
-    $list
+  def clients
+    if in_lobby?
+      return $sessions
+    else
+      return $players
+    end
   end
   
   def post_init
-    $list ||= {}
+    $sesions ||= {}
+    $players ||= {}
     puts "-- someone connected to the echo server!"
   end
 
   def receive_data data
-    
-    if data[1..19] == "policy-file-request"
-      p "Sent policy-file-request!"
-      send_data '<?xml version="1.0"?>
-      <!DOCTYPE cross-domain-policy SYSTEM "/xml/dtds/cross-domain-policy.dtd">
-      <cross-domain-policy> 
-         <site-control permitted-cross-domain-policies="master-only"/>
-         <allow-access-from domain="*" to-ports="*" />
-      </cross-domain-policy>'
-      close_connection_after_writing
-      return
+    if policy_file_request?(data)
+      p "-- respond with policy_file_request"
+    else
+      datas = data.split('}{')
+      while(datas.length>0) do
+        parse(datas.shift)
+      end
     end
-
-    datas = data.split('}{')
-    while(datas.length>0) do
-      parse(datas.shift)
-    end
-    
   end
 
-  def player=(value)
-    @player = value
-    $list[value.id] = self
-    p "-- new user is added:" + $list.length.to_s
+  def client=(value)
+    @client = value
+    clients[value.id] = self
+    p "-- new " + type + "is added:" + clients.length.to_s
+  end
+
+  
+  def in_lobby?
+    if @client.attribute_present?(:lobby_id)
+      return true
+    else
+      return false
+    end
+  end
+  
+  def type
+    if in_lobby?
+      return "session"
+    else
+      return "player"
+    end
   end
   
   def parse(data)
@@ -69,14 +81,29 @@ module SocketServer
     instance.execute
   end
   
+  def policy_file_request?(data)
+    if data[1..19] == "policy-file-request"
+      p "Sent policy-file-request!"
+      send_data '<?xml version="1.0"?>
+      <!DOCTYPE cross-domain-policy SYSTEM "/xml/dtds/cross-domain-policy.dtd">
+      <cross-domain-policy> 
+         <site-control permitted-cross-domain-policies="master-only"/>
+         <allow-access-from domain="*" to-ports="*" />
+      </cross-domain-policy>'
+      close_connection_after_writing
+      return true
+    end
+    return false
+  end
+  
   def unbind
-    if @player
+    if @client
       instance = CloseRequest.new
       instance.connection = self
       instance.execute
-    
-      $list.delete(@player.id)
-      puts "-- someone disconnected from the socket server: " + $list.length.to_s
+      
+      clients.delete(@client.id)
+      puts "-- someone disconnected from the socket server: " + clients.length.to_s
     end
   end
 end

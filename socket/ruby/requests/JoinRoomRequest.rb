@@ -26,7 +26,7 @@ class JoinRoomRequest < Request
       player.user_name = current_user.name
       player.save
       
-      @connection.player = player
+      @connection.client = player
       
       send_back({:max_players => room.max_players, :joined_players => room.joined_players})
       
