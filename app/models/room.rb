@@ -1,6 +1,6 @@
 class Room < ActiveRecord::Base
   has_many :players
-  belongs_to :game
+  belongs_to :lobby
   
   def is_full?
     joined_players >= max_players

@@ -1,6 +1,7 @@
 #feature can disable new_user activation
 class User < ActiveRecord::Base
   has_one :player
+  has_one :session
   
   attr_accessor :password, :password_confirmation
   
