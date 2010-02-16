@@ -2,7 +2,8 @@ class CreateRooms < ActiveRecord::Migration
   def self.up
     create_table :rooms do |t|
       t.string :salt
-      t.integer :max_players 
+      t.integer :lobby_id
+      t.integer :max_players
       t.integer :joined_players, :default => 0
       t.timestamps
     end
