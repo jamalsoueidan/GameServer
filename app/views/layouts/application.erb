@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Application</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/> 
+	<%= stylesheet_link_tag "default" %>
+	<%= stylesheet_link_tag "application" %>
+	<%= stylesheet_link_tag "form" %>	
+</head>
+<body>
+
+
+	<div id="wrap">
+			<div id="header">
+				
+				<h1><%= @title %></h1>
+				
+			</div>
+			<div id="inner-wrap">
+				<div id="content">
+				
+				<%= flash_messages %>
+				
+				<%= yield %>
+				
+				</div>
+			</div>
+	</div>
+	
+	<div id="footer"></div>
+	
+</body>
+</html>

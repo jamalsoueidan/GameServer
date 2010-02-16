@@ -1,0 +1,76 @@
+/*
+ -----------------------------DEFAULT-------------------------------------------
+*/
+
+.notice {
+	font-size:11px;
+	color:#999;
+}
+
+.error {
+	color: #FF0040;
+}
+
+.error input, .error textarea {
+	border:2px solid #FF0040;
+}
+
+.row em {
+	color:#FF0040;
+}
+
+/*
+ -----------------------------VERTICAL-------------------------------------------
+*/
+
+form.vertical .row {
+	margin-bottom:10px;
+}
+
+
+form.vertical .label label {
+	font-weight:bold;
+}
+
+form.vertical .label {
+	margin-bottom:2px;
+}
+
+form.vertical .input input, 
+form.vertical textarea {
+	padding:3px;
+}
+
+form.vertical .submit {
+	border-top:2px solid #000;
+	padding-top:8px;
+}
+
+/*
+ -----------------------------HORIZONTAL-------------------------------------------
+*/
+
+form.horizontal div.row {
+	margin-bottom:10px;
+}
+
+form.horizontal .label {
+	border:1px solid #FFF;
+	float:left;
+	width: 200px;
+}
+
+form.horizontal .input  {
+	float:left;
+}
+
+form.horizontal .submit {
+	border-top:2px solid #000;
+	padding-top:8px;
+}
+
+form.horizontal .row, 
+form.horizontal .submit {
+	overflow: hidden;
+	clear:both;
+}
